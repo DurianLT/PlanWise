@@ -1,0 +1,17 @@
+{% block content %}
+    <div>
+        <h1>{{ object.subject }}</h1>
+        <p><b>From: </b>{{ object.sender }}</p>
+        <p><b>Received at: </b>{{ object.received_at }}</p>
+        <p><b>Body: </b></p>
+        <div>{{ object.body|linebreaks }}</div>
+    </div>
+    <div>
+        <h2>Analysis Data</h2>
+        <p><b>Date: </b>{{ analysis_data.date }}</p>
+        <p><b>Event: </b>{{ analysis_data.events }}</p>
+        <p><b>Place: </b>{{ analysis_data.place|default:"N/A" }}</p>
+        <p><b>Time: </b>{{ analysis_data.time|default:"N/A" }}</p>
+    </div>
+    
+{% endblock %}

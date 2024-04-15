@@ -1,0 +1,32 @@
+{% block content %}
+<h2>{{ month_name }} {{ year }}</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Sun</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in weeks %}
+        <tr>
+            {% for day, events in week %}
+            <td>
+                {{ day }}
+                <ul>
+                    {% for event in events %}
+                    <li>{{ event.events }} - {{ event.place }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

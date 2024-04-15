@@ -1,0 +1,10 @@
+{% block content %}
+    {% for event in object_list %}
+        <div>
+            <h2><a href="{% url 'email-detail' event.pk %}">{{ event.subject }}</a></h2>
+            <p>Date: {{ event.analysis_data.date }}</p>
+            <p>Event: {{ event.analysis_data.events }}</p>
+            <p>Place: {{ event.analysis_data.place|default:"N/A" }}</p>
+        </div>
+    {% endfor %}
+{% endblock content %}
