@@ -1,3 +1,6 @@
+import requests
+import json
+from django.utils.timezone import now
 from email.utils import parseaddr
 import html
 import re
@@ -7,42 +10,45 @@ import imaplib
 import email
 from email.header import decode_header, make_header
 from bs4 import BeautifulSoup # type: ignore
-
-email_address = 'liutianjunrong@outlook.com'
-password = 'qyzbnfwusynxjqvh'
+from user.models import CustomUser
+import imaplib
 
 def clean_text(text):
-    """清理邮件正文中的多余空格和HTML实体"""
-    # 使用正则表达式移除多于的空格
-    text = re.sub(r'\s+', ' ', text)
+    """清理邮件正文中的多余空格并保留换行"""
+    # 只移除行内的多余空格，不影响换行符
+    lines = text.splitlines()
+    cleaned_lines = [re.sub(r'\s+', ' ', line).strip() for line in lines]
     # 使用html.unescape处理HTML实体
-    text = html.unescape(text)
-    text = re.sub(r'\n\s*\n', '\n\n', text)
-    return text.strip()
+    cleaned_text = html.unescape('\n'.join(cleaned_lines))
+    return cleaned_text
 
 # 登陆邮箱并读取原始邮件
-def get_mail(email_address, passsword):
-    # 选择服务器
-    server = imaplib.IMAP4_SSL('outlook.office365.com')
-    server.login(email_address, passsword)
-    server.select("INBOX")
-    # 搜索匹配的邮件
-    email_type, data = server.search(None, "UNSEEN")
-    # 邮件列表，使用空格分割得到邮件索引
-    msglist = data[0].split()
+def get_mail(email_address, password):
+    try:
+        # 选择服务器
+        server = imaplib.IMAP4_SSL('outlook.office365.com')
+        server.login(email_address, password)
+        server.select("INBOX")
+        # 搜索匹配的邮件
+        email_type, data = server.search(None, "UNSEEN")
+        # 邮件列表，使用空格分割得到邮件索引
+        msglist = data[0].split()
 
-    print('未读邮件一共有：', len(msglist))  # 显示未读邮件数量
-    
-    if len(msglist) != 0:
-        # 处理最新的未读邮件
-        latest = msglist[-1]  # 获取最新一封未读邮件的ID
-        email_type, datas = server.fetch(latest, '(RFC822)')
-        text = datas[0][1].decode('utf-8')
-        message = email.message_from_bytes(datas[0][1])  # 使用message_from_bytes代替message_from_string
-        return message
-    else:
-        print("暂无未读邮件")
-        return None
+        print('未读邮件一共有：', len(msglist))  # 显示未读邮件数量
+        
+        emails = []
+        for msg_num in msglist:
+            email_type, datas = server.fetch(msg_num, '(RFC822)')
+            text = datas[0][1].decode('utf-8')
+            message = email.message_from_bytes(datas[0][1])
+            message_id = message.get('Message-ID').strip()  # 获取邮件的 Message-ID
+            emails.append((message, message_id))
+        
+        server.logout()
+        return emails
+    except imaplib.IMAP4.error as e:
+        print("登录失败:", e)
+        return []
 
 def get_email_body(msg):
     if msg.is_multipart():
@@ -122,24 +128,79 @@ def print_info(msg, indent=0):
         else:
             print('%sAttachment: %s' % ('  ' * indent, content_type))
 
+def analyze_email_content(email_content):
+    url = "http://154.44.10.169:1145/analyze_email"
+    data = {"email_content": email_content}
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Failed to get a successful response from the API. Status Code:", response.status_code)
+        return None
+    
+def select_best_result(results):
+    best_score = 0
+    best_result = None
+    
+    for result in results:
+        score = 0
+        if result.get('date'):
+            score += 10
+        if result.get('time'):
+            score += 5
+        if result.get('events') and result['isEvents'] == 'True':
+            score += 10
+        if result.get('place'):
+            score += 5
+        
+        if score > best_score:
+            best_score = score
+            best_result = result
+            
+    return best_result
 
 class Command(BaseCommand):
-    help = 'Receive emails from Outlook'
+    help = 'Receive emails from Outlook and analyze them'
 
     def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.SUCCESS('Successfully called command'))
-        messageObject = get_mail(email_address, password)
-        if messageObject:
-            # 使用 decode_str 解码邮件主题和发件人信息
-            subject = decode_str(messageObject["Subject"])
-            from_ = decode_str(messageObject["From"])
-            date_ = email.utils.parsedate_to_datetime(messageObject["Date"])
-            body = get_email_body(messageObject)
+        users = CustomUser.objects.all()
+        for user in users:
+            self.stdout.write(self.style.SUCCESS(f'Fetching emails for {user.username}'))
+            emails = get_mail(user.outlook_email, user.secondary_password)
             
-            print("主题: %s" % subject)
-            print("发件人: %s" % from_)
-            print("发送时间: %s" % date_)
-            print("正文:\n%s" % body)
+            for messageObject, message_id in emails:
+                if messageObject and message_id:
+                    subject = decode_str(messageObject["Subject"])
+                    from_ = decode_str(messageObject["From"])
+                    date_ = email.utils.parsedate_to_datetime(messageObject["Date"])
+                    body = get_email_body(messageObject)
 
-            # 可以在这里保存邮件到数据库
-            # Email.objects.create(subject=subject, sender=from_, body=body)
+                    print("id:\n%s" % message_id)
+                    print("主题: %s" % subject)
+                    print("发件人: %s" % from_)
+                    print("发送时间: %s" % date_)
+                    print("正文:\n%s" % body)
+
+                    # 检查数据库中是否已经存储了这封邮件
+                    try:
+                        existing_email = Email.objects.get(message_id=message_id)
+                        print("这封邮件已经接收并存储过了。")
+                    except Email.DoesNotExist:
+                        # 调用 API 分析邮件内容
+                        results = [analyze_email_content(body) for _ in range(3)]
+                        best_result = select_best_result(results)
+                        print("最佳分析结果:", best_result)
+
+                        # 保存邮件到数据库
+                        Email.objects.create(
+                            user=user,
+                            subject=subject,
+                            sender=from_,
+                            body=body,
+                            analysis=json.dumps(best_result),
+                            received_at=date_ or now(),
+                            message_id=message_id
+                        )
+                        print("邮件已保存到数据库。")
+                else:
+                    print("没有新邮件或未能获取邮件ID。")
