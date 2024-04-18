@@ -33,11 +33,13 @@ def safe_loads(json_string):
     try:
         return json.loads(json_string)
     except json.JSONDecodeError:
-        # 如果标准解析失败，尝试修复单引号到双引号的转换
+        # 如果标准解析失败，尝试修复常见的问题
         try:
-            corrected_json_string = json_string.replace("'", '"')
+            # 替换单引号为双引号，并将None转换为null
+            corrected_json_string = json_string.replace("'", '"').replace("None", "null")
             return json.loads(corrected_json_string)
         except json.JSONDecodeError as e:
+            print("JSON 解析失败:", e)
             return None  # 或返回适当的默认值或错误信息
 
 
@@ -68,7 +70,10 @@ class CheckUserView(LoginRequiredMixin, View):
         prepared_emails = []
         for email in emails:
             # 使用 safe_loads 安全解析 event_details 字符串
-            event_details = safe_loads(email.event_details)
+            if email.event_details != 'None':
+                event_details = safe_loads(email.event_details)
+            else:
+                event_details = email.event_details
 
             prepared_emails.append({
                 'from_email': email.from_email,
@@ -83,9 +88,6 @@ class CheckUserView(LoginRequiredMixin, View):
     def update_emails(self, user):
         latest_mail_id = getNewID(user.outlook_email, user.secondary_password)
         if int(user.latest_email_id) != int(latest_mail_id):
-            print('更新中')
-            print(user.latest_email_id)
-            print(latest_mail_id)
             new_emails = getMailsForRange(user.outlook_email, user.secondary_password, int(user.latest_email_id),
                                           int(latest_mail_id))
             latest_email_id = None
