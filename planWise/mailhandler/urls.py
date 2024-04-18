@@ -1,8 +1,11 @@
+# 在你的 urls.py 文件中
 from django.urls import path
-from . import views
+from .views import CheckUserView, DisplayEmailsView, DisplayEmailView, GetEmailsView, UpdateUserView
 
 urlpatterns = [
-    path('emails/', views.EmailListView.as_view(), name='email-list'),
-    path('emails/<int:pk>/', views.EmailDetailView.as_view(), name='email-detail'), 
-    path('calendar/', views.CalendarView.as_view(), name='calendar-view'),
+    path('check-users/', CheckUserView.as_view(), name='check-users'),
+    path('display-emails/', DisplayEmailsView.as_view(), name='display-emails'),
+    path('get-emails/<int:user_id>/', GetEmailsView.as_view(), name='get-emails'),
+    path('display-email/', DisplayEmailView.as_view(), name='display-email'),
+    path('update-email/', UpdateUserView.as_view(), name='update-email'),
 ]

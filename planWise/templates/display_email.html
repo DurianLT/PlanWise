@@ -1,0 +1,23 @@
+<!-- 在你的 templates/display_emails.html 文件中 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Emails</title>
+</head>
+<body>
+    <h1>邮件信息</h1>
+    <ul>
+        {% for email in emails %}
+            <li>
+                <strong>From:</strong> {{ email.from }}<br>
+                <strong>Subject:</strong> {{ email.subject }}<br>
+                <strong>Date:</strong> {{ email.date }}<br>
+                <strong>Body:</strong> <pre>{{ email.body }}</pre><br>
+                <strong>Event Details:</strong> {{ email.event_details }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

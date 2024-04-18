@@ -1,87 +1,215 @@
-import calendar
-from datetime import datetime
-import json
-from django.shortcuts import render
-from django.views.generic import ListView,DetailView
-from .models import Email
-from django.utils.safestring import mark_safe
+# 在你的 views.py 文件中
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
+from django.shortcuts import render, redirect
 
-# Create your views here.
-class EmailListView(ListView):
-    model = Email
-    template_name = 'events_list.html'
+from django.http import JsonResponse
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # 为每个对象添加解析过的 JSON 数据
-        for email in context['object_list']:
-            email.analysis_data = email.get_analysis_data()
-        return context
-    
-class EmailDetailView(DetailView):
-    model = Email
-    template_name = 'email_detail.html'  # 指定用于详情页面的模板
+from mailhandler.emailProcessing.base import getMailsForIDs, getMailForID
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # 添加解析的 JSON 数据
-        context['analysis_data'] = context['object'].get_analysis_data()
-        return context
-    
-from django.http import HttpResponse
-import json
-import calendar
-from datetime import datetime
+from mailhandler.emailProcessing.tool import analyze_email_content, select_best_result
+
+from user.forms import UserForm
+
+from mailhandler.emailProcessing.base import getNew10ID
+
+from mailhandler.emailProcessing.base import loginTest
+
+from mailhandler.models import Email
+
+from user.models import CustomUser
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 from django.shortcuts import render
-from .models import Email  # 确保这是正确的路径
+from .models import Email
+from .emailProcessing.base import getNew10ID, getMailsForIDs, getNewID, getMailsForRange
 
-class CalendarView(View):
-    def get(self, request, year=datetime.now().year, month=datetime.now().month):
-        # 初始化日历
-        cal = calendar.Calendar(firstweekday=0)
-        month_days = cal.itermonthdays(year, month)
-        # 获取该月的所有邮件
-        emails = Email.objects.filter(received_at__year=year, received_at__month=month)
-        # 解析所有邮件的事件并按日期整理
-        events_by_date = {}
 
-        for email in emails:
-            # 添加异常处理以避免 JSON 解析错误
-            try:
-                data = json.loads(email.analysis) if email.analysis else {}
-            except json.JSONDecodeError:
-                print(f"解析错误: {email.analysis}")
-                data = {}
+class CheckUserView(LoginRequiredMixin, View):
+    template_name = 'check_user.html'
+    login_url = '/login/'
 
-            date = data.get('date')
-            if date:
-                date_obj = datetime.strptime(date, '%Y-%m-%d').date()
-                if date_obj in events_by_date:
-                    events_by_date[date_obj].append(data)
-                else:
-                    events_by_date[date_obj] = [data]
+    def get(self, request):
+        user = request.user
+        if not (user.outlook_email and user.secondary_password):
+            return render(request, self.template_name, {'user': {'message': '你未绑定邮箱', 'updating': False}})
 
-        # 创建日历网格
-        weeks = []
-        week = []
-        for day in month_days:
-            if day != 0:
-                date_obj = datetime(year, month, day).date()
-                events = events_by_date.get(date_obj, [])
-            else:
-                events = []
-            week.append((day, events))
-            if len(week) == 7:
-                weeks.append(week)
-                week = []
-        if week:
-            weeks.append(week)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            response = self.update_emails(user)
+            return response
 
-        context = {
-            'year': year,
-            'month': month,
-            'month_name': calendar.month_name[month],
-            'weeks': weeks,
+        user_info = {
+            'outlook_email': user.outlook_email,
+            'secondary_password': '**********',
+            'message': '你已绑定邮箱',
+            'updating': True,
+            'emails': self.get_emails_from_db(user)
         }
-        return render(request, 'calendar.html', context)
+        return render(request, self.template_name, {'user': user_info})
+
+    def get_emails_from_db(self, user):
+        emails = Email.objects.filter(user=user).order_by('-date')
+        return [
+            {
+                'from_email': email.from_email,
+                'subject': email.subject,
+                'date': email.date,
+                'body': email.body,
+                'message_id': email.message_id,
+                'event_details': email.event_details  # 确保这里包含了 event_details
+            }
+            for email in emails
+        ]
+
+    def update_emails(self, user):
+        latest_mail_id = getNewID(user.outlook_email, user.secondary_password)
+        if user.latest_email_id != latest_mail_id:
+            new_emails = getMailsForRange(user.outlook_email, user.secondary_password, int(user.latest_email_id),
+                                          int(latest_mail_id))
+            latest_email_id = None
+            for email in new_emails:
+                body = email[3]
+                # 解析邮件内容
+                results = [analyze_email_content(body) for _ in range(3)]
+                best_result = select_best_result(results)
+                event_details = self.parse_best_result(best_result)  # 假设这个方法定义了如何解析和格式化结果
+
+                # 更新或创建邮件记录，同时保存事件详情
+                obj, created = Email.objects.update_or_create(
+                    user=user,
+                    message_id=email[4],
+                    defaults={
+                        'from_email': email[0],
+                        'subject': email[1],
+                        'date': email[2],
+                        'body': body,
+                        'event_details': event_details  # 保存解析的事件详情
+                    }
+                )
+                if not latest_email_id or email[4] > latest_email_id:
+                    latest_email_id = email[4]
+
+            if latest_email_id:
+                user.latest_email_id = latest_email_id
+                user.save(update_fields=['latest_email_id'])
+
+            emails = self.get_emails_from_db(user)
+            return JsonResponse({'status': 'success', 'emails': emails})
+
+        return JsonResponse({'status': 'no_update'})
+
+    def parse_best_result(self, result):
+        # 逻辑来格式化结果字符串
+        return f"Event: {result}"
+
+
+class UpdateUserView(LoginRequiredMixin, View):
+    template_name = 'update_emails.html'
+    login_url = '/login/'
+
+    def get(self, request):
+        user = request.user
+        form = UserForm(instance=user)  # 创建表单实例，使用当前用户的数据填充
+        return render(request, self.template_name, {'form': form, 'user': user})
+
+    def post(self, request):
+        user = request.user
+        form = UserForm(request.POST, instance=user)  # 绑定表单到当前用户
+        if form.is_valid():
+            if loginTest(user.outlook_email, user.secondary_password):
+                form.save()  # 保存用户信息
+                latest_ids = getNew10ID(user.outlook_email, user.secondary_password)
+                emails = getMailsForIDs(user.outlook_email, user.secondary_password, latest_ids)
+                latest_email_id = None
+                for email in emails:
+                    from_email, subject, date, body, msg_id = email
+                    obj, created = Email.objects.update_or_create(
+                        user=user,
+                        message_id=msg_id,
+                        defaults={'from_email': from_email, 'subject': subject, 'date': date, 'body': body}
+                    )
+                    if not latest_email_id or msg_id > latest_email_id:
+                        latest_email_id = msg_id  # 更新最新邮件ID
+
+                if latest_email_id:
+                    user.latest_email_id = latest_email_id
+                    user.save(update_fields=['latest_email_id'])  # 保存最新邮件ID到用户模型
+
+                return JsonResponse({'status': 'success', 'message': 'Credentials valid and emails saved.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Invalid login credentials'})
+        return JsonResponse({'status': 'error', 'message': 'Form is invalid'})
+
+
+class DisplayEmailsView(LoginRequiredMixin, View):
+    template_name = 'display_emails.html'
+    login_url = '/login/'
+
+    def get(self, request):
+        # 只负责渲染基础页面
+        return render(request, self.template_name)
+
+
+class GetEmailsView(View):
+    def get(self, request, user_id):
+        user = CustomUser.objects.get(pk=user_id)
+        userName = user.outlook_email
+        password = user.secondary_password
+        ids = [4172, 4173, 4174, 4175, 4178, 4177]  # 示例 ID
+        emails = getMailsForIDs(userName, password, ids)  # 获取邮件数据
+        return JsonResponse({'emails': emails})  # 返回JSON响应
+
+
+class DisplayEmailView(LoginRequiredMixin, View):
+    template_name = 'display_email.html'
+    login_url = '/login/'
+
+    def get(self, request):
+        email_info_list = []
+        users = CustomUser.objects.all()
+
+        for user in users:
+            userName = user.outlook_email
+            password = user.secondary_password
+            specific_msg_id = 4225  # 根据需要调整
+
+            if userName and password:
+                email_data = getMailForID(userName, password, specific_msg_id)
+                if isinstance(email_data, str):
+                    continue  # 跳过错误消息
+
+                from_decoded = email_data[0][0]
+                subject = email_data[0][1]
+                date = email_data[0][2]
+                body = email_data[0][3]
+
+                results = [analyze_email_content(body) for _ in range(3)]
+                best_result = select_best_result(results)
+
+                event_details = self.parse_best_result(best_result)
+
+                email_info_list.append({
+                    'from': from_decoded,
+                    'subject': subject,
+                    'date': date,
+                    'body': body,
+                    'event_details': event_details
+                })
+
+        return render(request, self.template_name, {'emails': email_info_list})
+
+    def parse_best_result(self, best_result):
+        if best_result.get('isEvents') == 'True':
+            details = '帮你解析到了事件：'
+            if best_result.get('date'):
+                details += f"日期：{best_result['date']} "
+            if best_result.get('time'):
+                details += f"时间：{best_result['time']} "
+            if best_result.get('place'):
+                details += f"地点：{best_result['place']} "
+            if best_result.get('events'):
+                details += f"事件：{best_result['events']} "
+            return details
+        else:
+            return '没有解析出事件'

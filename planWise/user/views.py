@@ -4,7 +4,9 @@ from django.contrib.auth.views import LoginView, LogoutView
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
-from mailhandler.management.commands.receive_emails import Command as EmailCommand
+from mailhandler.emailProcessing.tool import Command as EmailCommand
+
+
 
 @receiver(user_logged_in)
 def sync_emails_on_login(sender, user, request, **kwargs):

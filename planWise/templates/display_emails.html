@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Emails</title>
+</head>
+<body>
+    <h1>邮件信息</h1>
+    <div id="email-container">正在获取你的邮件信息......</div>
+
+    <script>
+    function loadEmails(userId) {
+        fetch(`/get-emails/${userId}/`)
+            .then(response => response.json())
+            .then(data => {
+                let emailsHtml = data.emails.map(email => `
+                    <li>
+                        <h3>From: ${email[0]}</h3>
+                        <p>Subject: ${email[1]}</p>
+                        <p>Date: ${email[2]}</p>
+                        <div>Body: <pre>${email[3]}</pre></div>
+                    </li>
+                `).join('');
+                document.getElementById('email-container').innerHTML = `<ul>${emailsHtml}</ul>`;
+            });
+    }
+    // 假设用户ID已知或通过其他方式获取
+    loadEmails(1);  // 举例使用用户ID 1
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件处理系统</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        function fetchAndUpdateEmails() {
+            $.ajax({
+                url: '',  // 留空表示提交到当前页面
+                type: 'get',
+                dataType: 'json',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(data) {
+                    if (data.status === 'success') {
+                        $('#emailList').empty();  // 清空邮件列表
+                        data.emails.forEach(function(email) {
+                            $('#emailList').append(
+                                `<li>
+                                    <h4>From: ${email.from_email}</h4>
+                                    <p>Subject: ${email.subject}</p>
+                                    <p>Date: ${new Date(email.date).toISOString().slice(0, 19).replace('T', ' ')}</p>
+                                    <div>Body: <pre>${email.body}</pre></div>
+                                    <div>Event Details: ${email.event_details || 'No events found.'}</div>
+                                </li>`
+                            );
+                        });
+                        $('#updateStatus').text('邮件已更新。');
+                    } else {
+                        $('#updateStatus').text('当前邮件已是最新。');
+                    }
+                },
+                error: function() {
+                    $('#updateStatus').text('邮件更新失败，请检查网络或联系管理员。');
+                }
+            });
+        }
+
+        // 定时检查更新，或者可以绑定到某个按钮点击事件触发
+        setInterval(fetchAndUpdateEmails, 30000);  // 每30秒检查一次
+    });
+    </script>
+
+
+</head>
+<body>
+    <h1>邮件处理系统</h1>
+    <h3>{{ user.message }}</h3>
+    <p>Outlook Email: {{ user.outlook_email }}</p>
+    <p>Secondary Password: **********</p>
+
+    <div id="updateStatus"></div>
+
+    <h3>自动为你列出的邮件</h3>
+    <ul id="emailList">
+        {% for email_data in user.emails %}
+            <li>
+                <h4>From: {{ email_data.from_email }}</h4>
+                <p>Subject: {{ email_data.subject }}</p>
+                <p>Date: {{ email_data.date|date:"Y-m-d H:i:s" }}</p>
+                <div>Body: <pre>{{ email_data.body|safe }}</pre></div>
+                <div>Event Details: {{ email_data.event_details }}</div>
+
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
