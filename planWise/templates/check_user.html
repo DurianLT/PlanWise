@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>邮件处理系统</title>
+    {% if user.outlook_email %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
     $(document).ready(function() {
@@ -42,14 +43,21 @@
         setInterval(fetchAndUpdateEmails, 30000);  // 每30秒检查一次
     });
     </script>
+    {% endif %}
 
 
 </head>
 <body>
     <h1>邮件处理系统</h1>
     <h3>{{ user.message }}</h3>
-    <p>Outlook Email: {{ user.outlook_email }}</p>
-    <p>Secondary Password: **********</p>
+    {% if user.outlook_email %}
+        <p>Outlook Email: {{ user.outlook_email }}</p>
+        <p>Secondary Password: {{ '**********' }}</p>
+    {% else %}
+        <p>please bind you outlook_email.</p>
+        <a href="{% url 'update-email' %}">Bind Your Email Here</a>
+    {% endif %}
+
 
     <div id="updateStatus"></div>
 
@@ -61,7 +69,21 @@
                 <p>Subject: {{ email_data.subject }}</p>
                 <p>Date: {{ email_data.date|date:"Y-m-d H:i:s" }}</p>
                 <div>Body: <pre>{{ email_data.body|safe }}</pre></div>
-                <div>Event Details: {{ email_data.event_details }}</div>
+
+                {% if email_data.event_details and email_data.event_details.isEvents == 'True' %}
+                <div>解析出了事件
+                    <p>日期：{{ email_data.event_details.date }}</p>
+                    <p>事件：{{ email_data.event_details.events }}</p>
+                    {% if email_data.event_details.time %}
+                    <p>时间：{{ email_data.event_details.time }}</p>
+                    {% endif %}
+                    <p>地点：{{ email_data.event_details.place }}</p>
+                </div>
+                {% else %}
+                {% endif %}
+
+
+
 
             </li>
         {% endfor %}

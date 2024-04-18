@@ -1,4 +1,6 @@
 # 在你的 views.py 文件中
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.shortcuts import render, redirect
@@ -26,6 +28,19 @@ from .models import Email
 from .emailProcessing.base import getNew10ID, getMailsForIDs, getNewID, getMailsForRange
 
 
+def safe_loads(json_string):
+    # 尝试用标准的双引号 JSON 解析
+    try:
+        return json.loads(json_string)
+    except json.JSONDecodeError:
+        # 如果标准解析失败，尝试修复单引号到双引号的转换
+        try:
+            corrected_json_string = json_string.replace("'", '"')
+            return json.loads(corrected_json_string)
+        except json.JSONDecodeError as e:
+            return None  # 或返回适当的默认值或错误信息
+
+
 class CheckUserView(LoginRequiredMixin, View):
     template_name = 'check_user.html'
     login_url = '/login/'
@@ -50,21 +65,27 @@ class CheckUserView(LoginRequiredMixin, View):
 
     def get_emails_from_db(self, user):
         emails = Email.objects.filter(user=user).order_by('-date')
-        return [
-            {
+        prepared_emails = []
+        for email in emails:
+            # 使用 safe_loads 安全解析 event_details 字符串
+            event_details = safe_loads(email.event_details)
+
+            prepared_emails.append({
                 'from_email': email.from_email,
                 'subject': email.subject,
                 'date': email.date,
                 'body': email.body,
                 'message_id': email.message_id,
-                'event_details': email.event_details  # 确保这里包含了 event_details
-            }
-            for email in emails
-        ]
+                'event_details': event_details
+            })
+        return prepared_emails
 
     def update_emails(self, user):
         latest_mail_id = getNewID(user.outlook_email, user.secondary_password)
-        if user.latest_email_id != latest_mail_id:
+        if int(user.latest_email_id) != int(latest_mail_id):
+            print('更新中')
+            print(user.latest_email_id)
+            print(latest_mail_id)
             new_emails = getMailsForRange(user.outlook_email, user.secondary_password, int(user.latest_email_id),
                                           int(latest_mail_id))
             latest_email_id = None
@@ -101,7 +122,7 @@ class CheckUserView(LoginRequiredMixin, View):
 
     def parse_best_result(self, result):
         # 逻辑来格式化结果字符串
-        return f"Event: {result}"
+        return f"{result}"
 
 
 class UpdateUserView(LoginRequiredMixin, View):
@@ -124,10 +145,16 @@ class UpdateUserView(LoginRequiredMixin, View):
                 latest_email_id = None
                 for email in emails:
                     from_email, subject, date, body, msg_id = email
+                    # 进行邮件内容解析
+                    results = [analyze_email_content(body) for _ in range(3)]
+                    best_result = select_best_result(results)
+                    event_details = self.parse_best_result(best_result)
+                    # 更新或创建邮件记录，同时保存事件详情
                     obj, created = Email.objects.update_or_create(
                         user=user,
                         message_id=msg_id,
-                        defaults={'from_email': from_email, 'subject': subject, 'date': date, 'body': body}
+                        defaults={'from_email': from_email, 'subject': subject, 'date': date, 'body': body,
+                                  'event_details': event_details}
                     )
                     if not latest_email_id or msg_id > latest_email_id:
                         latest_email_id = msg_id  # 更新最新邮件ID
@@ -140,6 +167,10 @@ class UpdateUserView(LoginRequiredMixin, View):
             else:
                 return JsonResponse({'status': 'error', 'message': 'Invalid login credentials'})
         return JsonResponse({'status': 'error', 'message': 'Form is invalid'})
+
+    def parse_best_result(self, result):
+        # 逻辑来格式化结果字符串
+        return f"{result}"
 
 
 class DisplayEmailsView(LoginRequiredMixin, View):
