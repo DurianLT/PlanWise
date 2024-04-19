@@ -1,4 +1,3 @@
-# 在你的 views.py 文件中
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -129,7 +128,7 @@ class CheckUserView(LoginRequiredMixin, View):
 
 class UpdateUserView(LoginRequiredMixin, View):
     template_name = 'update_emails.html'
-    login_url = '/login/'
+    login_url = 'login'
 
     def get(self, request):
         user = request.user
@@ -177,7 +176,7 @@ class UpdateUserView(LoginRequiredMixin, View):
 
 class DisplayEmailsView(LoginRequiredMixin, View):
     template_name = 'display_emails.html'
-    login_url = '/login/'
+    login_url = 'login'
 
     def get(self, request):
         # 只负责渲染基础页面
@@ -196,7 +195,7 @@ class GetEmailsView(View):
 
 class DisplayEmailView(LoginRequiredMixin, View):
     template_name = 'display_email.html'
-    login_url = '/login/'
+    login_url = 'login'
 
     def get(self, request):
         email_info_list = []
