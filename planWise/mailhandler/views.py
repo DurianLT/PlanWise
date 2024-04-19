@@ -84,13 +84,19 @@ class EmailDetailView(DetailView):
 
         # 根据事件详情初始化表单
         if event_details:
-            # 如果提供了时间，则将日期和时间结合起来
-            if 'time' in event_details and event_details['time']:
-                datetime_str = f"{event_details.get('date', datetime.datetime.now().date())} {event_details['time']}"
-                datetime_obj = datetime.datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+            if 'time' in event_details and event_details['time'] != 'null':
+                if 'date' in event_details and event_details['date'] != 'null':
+                    datetime_str = f"{event_details['date']} {event_details['time']}"
+                else:
+                    datetime_str = f"{datetime.datetime.now().date()} {event_details['time']}"
+                # 如果只提供了日期而没有提供时间，则默认将时间设置为"00:00:00"
+            elif 'date' in event_details and event_details['date'] != 'null':
+                datetime_str = f"{event_details['date']} 00:00:00"
+                # 如果既没有提供日期也没有提供时间，则使用当前日期和时间
             else:
-                datetime_obj = datetime.datetime.strptime(event_details.get('date', datetime.datetime.now().date()),
-                                                          '%Y-%m-%d')
+                datetime_str = f"{datetime.datetime.now().date()} 00:00:00"
+
+            datetime_obj = datetime.datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
 
             initial_data = {
                 'date': datetime_obj,  # 使用 datetime 对象
