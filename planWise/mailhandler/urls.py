@@ -1,6 +1,6 @@
 # 在你的 urls.py 文件中
 from django.urls import path
-from .views import CheckUserView, DisplayEmailsView, DisplayEmailView, GetEmailsView, UpdateUserView
+from .views import CheckUserView, DisplayEmailsView, DisplayEmailView, GetEmailsView, UpdateUserView, EmailDetailView
 
 urlpatterns = [
     path('check-users/', CheckUserView.as_view(), name='check-users'),
@@ -8,4 +8,5 @@ urlpatterns = [
     path('get-emails/<int:user_id>/', GetEmailsView.as_view(), name='get-emails'),
     path('display-email/', DisplayEmailView.as_view(), name='display-email'),
     path('update-email/', UpdateUserView.as_view(), name='update-email'),
+    path('email/<int:pk>/', EmailDetailView.as_view(), name='email_detail'),
 ]
