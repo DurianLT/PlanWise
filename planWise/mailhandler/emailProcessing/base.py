@@ -16,13 +16,13 @@ def clean_text(html_content):
     soup = BeautifulSoup(html_content, 'lxml')
 
     # 获取所有文本内容，去除标签
-    text = soup.get_text(separator=' ')
+    text = soup.get_text(separator='\n')  # 使用换行符作为分隔符
 
-    # 去除CSS样式和多余的空格
-    text = re.sub(r'\s+', ' ', text)  # 将一个或多个空格替换为一个空格
-    text = re.sub(r'\n\n+', '\n', text)  # 将两个或更多的换行符替换为一个换行符
+    # 分割文本为行，并清洗每一行
+    lines = text.splitlines()
+    cleaned_text = '\n'.join([re.sub(r'\s+', ' ', line).strip() for line in lines if line.strip()])  # 清除行内多余的空格，并连接为一个字符串
 
-    return text.strip()  # 返回处理后的文本，移除首尾的空格和换行
+    return cleaned_text
 
 
 def getMailHostPort(userName):
