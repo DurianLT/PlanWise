@@ -4,9 +4,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from . import models
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from django.contrib.auth.signals import user_logged_in
-from django.dispatch import receiver
-from mailhandler.emailProcessing.tool import Command as EmailCommand
+
 
 class UserRegisterView(CreateView):
     form_class = CustomUserCreationForm
