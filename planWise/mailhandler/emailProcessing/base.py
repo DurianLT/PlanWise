@@ -62,10 +62,13 @@ def parse_email(data):
             ctype = part.get_content_type()
             cdispo = str(part.get('Content-Disposition'))
             if ctype == 'text/plain' and 'attachment' not in cdispo:
-                body = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
+                text = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
+                print('clean_text')
+                body = clean_text(text)
                 break
     else:
         text = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
+        print('clean_text')
         body = clean_text(text)
 
     # 处理时间
