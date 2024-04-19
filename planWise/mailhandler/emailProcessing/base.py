@@ -10,6 +10,9 @@ import ssl
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
+from mailhandler.models import Email
+
+
 def clean_text(html_content):
     # 使用BeautifulSoup解析HTML内容
     soup = BeautifulSoup(html_content, 'lxml')
@@ -19,9 +22,11 @@ def clean_text(html_content):
 
     # 分割文本为行，并清洗每一行
     lines = text.splitlines()
-    cleaned_text = '\n'.join([re.sub(r'\s+', ' ', line).strip() for line in lines if line.strip()])  # 清除行内多余的空格，并连接为一个字符串
+    cleaned_text = '\n'.join(
+        [re.sub(r'\s+', ' ', line).strip() for line in lines if line.strip()])  # 清除行内多余的空格，并连接为一个字符串
 
     return cleaned_text
+
 
 def getMailHostPort(userName):
     if 'gmail.com' in userName:
@@ -35,6 +40,7 @@ def getMailHostPort(userName):
         port = 993
 
     return host, port
+
 
 def parse_email(data):
     envelope = data[b'ENVELOPE']
@@ -261,3 +267,114 @@ def select_best_result(results):
             best_result = result
 
     return best_result
+
+
+def fetch_and_process_emails(user):
+    if user.latest_email_id is None:
+        latest_ids = getNew10ID(user.outlook_email, user.secondary_password)
+        emails = getMailsForIDs(user.outlook_email, user.secondary_password, latest_ids)
+        latest_email_id = None
+        for email in emails:
+            latest_email_id = process_email(user, email, latest_email_id)
+        if latest_email_id:
+            user.latest_email_id = latest_email_id
+            user.save(update_fields=['latest_email_id'])
+    else:
+        latest_email_id = getNewID(user.outlook_email, user.secondary_password)
+        if int(user.latest_email_id) != int(latest_email_id):
+            emails = getMailsForRange(user.outlook_email, user.secondary_password, int(user.latest_email_id),
+                                          int(latest_email_id))
+            for email in emails:
+                latest_email_id = process_email(user, email, latest_email_id)
+            if latest_email_id:
+                user.latest_email_id = latest_email_id
+                user.save(update_fields=['latest_email_id'])
+
+
+def process_email(user, email, latest_email_id):
+    from_email, subject, date, body, msg_id = email
+    results = [analyze_email_content(body) for _ in range(3)]
+    best_result = select_best_result(results)
+    event_details = parse_best_result(best_result)
+    obj, created = Email.objects.update_or_create(
+        user=user,
+        message_id=msg_id,
+        defaults={'from_email': from_email, 'subject': subject, 'date': date, 'body': body,
+                  'event_details': event_details}
+    )
+    return msg_id if not latest_email_id or msg_id > latest_email_id else latest_email_id
+
+
+def parse_best_result(result):
+    # 逻辑来格式化结果字符串
+    return f"{result}"
+
+
+def safe_loads(json_string):
+    # 尝试用标准的双引号 JSON 解析
+    try:
+        return json.loads(json_string)
+    except json.JSONDecodeError:
+        # 如果标准解析失败，尝试修复常见的问题
+        try:
+            # 替换单引号为双引号，并将None转换为null
+            corrected_json_string = json_string.replace("'", '"').replace("None", "null")
+            return json.loads(corrected_json_string)
+        except json.JSONDecodeError as e:
+            print("JSON 解析失败:", e)
+            return None  # 或返回适当的默认值或错误信息
+
+
+def get_emails_from_db(user):
+    emails = Email.objects.filter(user=user).order_by('-date')
+    prepared_emails = []
+    for email in emails:
+        if email.event_details != 'None':
+            event_details = safe_loads(email.event_details)
+        else:
+            event_details = email.event_details
+        prepared_emails.append({
+            'pk': email.pk,
+            'from_email': email.from_email,
+            'subject': email.subject,
+            'date': email.date,
+            'body': email.body,
+            'message_id': email.message_id,
+            'event_details': event_details
+        })
+    return prepared_emails
+
+
+def update_emails(user):
+    latest_mail_id = getNewID(user.outlook_email, user.secondary_password)
+    if int(user.latest_email_id) != int(latest_mail_id):
+        new_emails = getMailsForRange(user.outlook_email, user.secondary_password, int(user.latest_email_id),
+                                      int(latest_mail_id))
+        latest_email_id = None
+        for email in new_emails:
+            body = email[3]
+            # 解析邮件内容
+            results = [analyze_email_content(body) for _ in range(3)]
+            best_result = select_best_result(results)
+            event_details = parse_best_result(best_result)  # 假设这个方法定义了如何解析和格式化结果
+
+            # 更新或创建邮件记录，同时保存事件详情
+            obj, created = Email.objects.update_or_create(
+                user=user,
+                message_id=email[4],
+                defaults={
+                    'from_email': email[0],
+                    'subject': email[1],
+                    'date': email[2],
+                    'body': body,
+                    'event_details': event_details  # 保存解析的事件详情
+                }
+            )
+            if not latest_email_id or email[4] > latest_email_id:
+                latest_email_id = email[4]
+
+        if latest_email_id:
+            user.latest_email_id = latest_email_id
+            user.save(update_fields=['latest_email_id'])
+        return True, get_emails_from_db(user)
+    return False, []
