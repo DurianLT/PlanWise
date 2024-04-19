@@ -2,74 +2,19 @@
 {% block title %}
     邮件处理系统
 {% endblock %}
-{% block script %}
-    {% if user.outlook_email %}
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-        $(document).ready(function() {
-            function fetchAndUpdateEmails() {
-                $.ajax({
-                    url: '',  // 留空表示提交到当前页面
-                    type: 'get',
-                    dataType: 'json',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    success: function(data) {
-                        if (data.status === 'success') {
-                            $('#emailList').empty();  // 清空邮件列表
-                            data.emails.forEach(function(email) {
-                                var eventDetailsHtml = ''; // 初始化事件详情字符串
-                                if (email.event_details && email.event_details.isEvents === 'True') {
-                                    eventDetailsHtml = `<div>解析出了事件
-                                                            <p>日期：${email.event_details.date}</p>
-                                                            <p>事件：${email.event_details.events}</p>`;
-                                    if (email.event_details.time) {
-                                        eventDetailsHtml += `<p>时间：${email.event_details.time}</p>`;
-                                    }
-                                    eventDetailsHtml += `<p>地点：${email.event_details.place}</p>
-                                                        </div>`;
-                                } else {
-                                    eventDetailsHtml = 'No events found.';
-                                }
-
-                                $('#emailList').append(
-                                    `<li>
-                                        <h4>From: ${email.from_email}</h4>
-                                        <p>Subject: ${email.subject}</p>
-                                        <p>Date: ${new Date(email.date).toISOString().slice(0, 19).replace('T', ' ')}</p>
-                                        <div>Body: <pre>${email.body}</pre></div>
-                                        <div>${eventDetailsHtml}</div>
-                                        <a href="/email/${email.pk}/" class="button">查看详情</a>
-                                    </li>`
-                                );
-                            });
-                            $('#updateStatus').text('邮件已更新。');
-                        } else {
-                            $('#updateStatus').text('当前邮件已是最新。');
-                        }
-                    },
-                    error: function() {
-                        $('#updateStatus').text('邮件更新失败，请检查网络或联系管理员。');
-                    }
-                });
-            }
-
-            // 定时检查更新，或者可以绑定到某个按钮点击事件触发
-            setInterval(fetchAndUpdateEmails, 30000);  // 每30秒检查一次
-        });
-        </script>
-
-    {% endif %}
-{% endblock %}
 {% block content %}
-    <h1>邮件处理系统</h1>
-    <h3>{{ user.message }}</h3>
-    {% if user.outlook_email %}
-        <p>Outlook Email: {{ user.outlook_email }}</p>
-        <p>Secondary Password: {{ '**********' }}</p>
-    {% else %}
-        <p>please bind you outlook_email.</p>
-        <a href="{% url 'update-email' %}">Bind Your Email Here</a>
-    {% endif %}
+<div class="container_check_user">
+    <div id="emailListContainer">
+        <h1>邮件处理系统</h1>
+        <h3>{{ user.message }}</h3>
+        {% if user.outlook_email %}
+            <p>Outlook Email: {{ user.outlook_email }}</p>
+            <p>Secondary Password: {{ '**********' }}</p>
+        {% else %}
+            <p>please bind you outlook_email.</p>
+            <a href="{% url 'update-email' %}">Bind Your Email Here</a>
+        {% endif %}
+    </div>
 
 
     <div id="updateStatus"></div>
@@ -77,25 +22,105 @@
     <h3>自动为你列出的邮件</h3>
     <ul id="emailList">
         {% for email_data in user.emails %}
-            <li>
-                <h4>From: {{ email_data.from_email }}</h4>
-                <p>Subject: {{ email_data.subject }}</p>
-                <p>Date: {{ email_data.date|date:"Y-m-d H:i:s" }}</p>
-                <div>Body: <pre>{{ email_data.body }}</pre></div>
-
-                {% if email_data.event_details and email_data.event_details.isEvents == 'True' %}
-                <div>解析出了事件
-                    <p>日期：{{ email_data.event_details.date }}</p>
-                    <p>事件：{{ email_data.event_details.events }}</p>
-                    {% if email_data.event_details.time %}
-                    <p>时间：{{ email_data.event_details.time }}</p>
-                    {% endif %}
-                    <p>地点：{{ email_data.event_details.place }}</p>
+            <!-- 单独邮件样式 -->
+            <div class="emailItem">
+                <div class="emailHeader">
+                    <div class="sender">{{ email_data.from_email }}</div>
+                    <div class="subject">{{ email_data.subject }}</div>
+                    <div class="date">{{ email_data.date|date:"Y-m-d H:i:s" }}</div>
                 </div>
-                {% else %}
-                {% endif %}
-                <a href="{% url 'email_detail' pk=email_data.pk %}" class="button">查看详情</a>
-            </li>
+                <div class="emailBody">
+                    <div class="bodyContent">
+                        {{ email_data.body }}
+                        <!-- 额外的div用于隐藏部分文本 -->
+                        <div class="bodyContentOverlay"></div>
+                    </div>
+
+                    <!-- 如果解析出事件，强调显示 -->
+                    {% if email_data.event_details and email_data.event_details.isEvents == 'True' %}
+                        <div class="eventDetails">解析出了事件</div>
+                        <!-- 其他事件信息 -->
+                    {% endif %}
+                </div>
+                <div class="footer">
+                    <a href="{% url 'email_detail' pk=email_data.pk %}" class="button">查看详情</a>
+                </div>
+            </div>
         {% endfor %}
     </ul>
+</div>
+<button onclick="topFunction()" id="scrollTopBtn" title="回到顶部">Top</button>
+<script>
+    // 当页面滚动到一定位置时显示或隐藏回到顶部按钮
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            document.getElementById("scrollTopBtn").style.display = "block";
+        } else {
+            document.getElementById("scrollTopBtn").style.display = "none";
+        }
+    }
+
+    // 回到顶部的函数
+    function topFunction() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    }
+</script>
+{% if user.outlook_email %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        function fetchAndUpdateEmails() {
+            $.ajax({
+                url: '',  // 留空表示提交到当前页面
+                type: 'get',
+                dataType: 'json',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function(data) {
+                    if (data.status === 'success') {
+                        $('#emailList').empty();  // 清空邮件列表
+                        data.emails.forEach(function(email) {
+                            var eventDetailsHtml = ''; // 初始化事件详情字符串
+                            if (email.event_details && email.event_details.isEvents === 'True') {
+                                eventDetailsHtml = `<div>解析出了事件
+                                                        <p>日期：${email.event_details.date}</p>
+                                                        <p>事件：${email.event_details.events}</p>`;
+                                if (email.event_details.time) {
+                                    eventDetailsHtml += `<p>时间：${email.event_details.time}</p>`;
+                                }
+                                eventDetailsHtml += `<p>地点：${email.event_details.place}</p>
+                                                    </div>`;
+                            } else {
+                                eventDetailsHtml = 'No events found.';
+                            }
+
+                            $('#emailList').append(
+                                `<li>
+                                    <h4>From: ${email.from_email}</h4>
+                                    <p>Subject: ${email.subject}</p>
+                                    <p>Date: ${new Date(email.date).toISOString().slice(0, 19).replace('T', ' ')}</p>
+                                    <div>Body: <pre>${email.body}</pre></div>
+                                    <div>${eventDetailsHtml}</div>
+                                    <a href="/email/${email.pk}/" class="button">查看详情</a>
+                                </li>`
+                            );
+                        });
+                        $('#updateStatus').text('邮件已更新。');
+                    } else {
+                        $('#updateStatus').text('当前邮件已是最新。');
+                    }
+                },
+                error: function() {
+                    $('#updateStatus').text('邮件更新失败，请检查网络或联系管理员。');
+                }
+            });
+        }
+
+        // 定时检查更新，或者可以绑定到某个按钮点击事件触发
+        setInterval(fetchAndUpdateEmails, 30000);  // 每30秒检查一次
+    });
+    </script>
+{% endif %}
 {% endblock %}

@@ -175,5 +175,311 @@ button:hover {
 .form-container {
     margin: 20px 0; /* Add top and bottom margin */
 }
+/*check_user stlying*/
 
+/* 样式化邮件处理系统标题 */
+h1 {
+    font-size: 24px;
+    color: #333; /* 改变标题颜色为深灰色 */
+}
 
+/* 美化自动列出的邮件部分 */
+#emailListContainer {
+    background-color: #f5f5f5; /* 淡灰色背景 */
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* 单独邮件样式 */
+.emailItem {
+    background-color: #fafafa; /* 浅灰色背景 */
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+}
+
+/* 解析事件样式 */
+.eventDetails {
+    font-weight: bold;
+    color: #007bff; /* 蓝色字体 */
+}
+
+/* 添加折叠效果 */
+.emailBody {
+    max-height: 200px; /* 最大高度 */
+    overflow: hidden;
+    transition: max-height 0.3s ease; /* 添加过渡效果 */
+}
+
+.emailItem.collapsed .emailBody {
+    max-height: 0; /* 隐藏折叠部分 */
+}
+/* 单独邮件样式 */
+.emailItem {
+    background-color: #fff; /* 白色背景 */
+    border: 1px solid #ccc; /* 边框 */
+    border-radius: 5px; /* 圆角 */
+    margin-bottom: 20px;
+}
+
+/* 邮件头部样式 */
+.emailHeader {
+    background-color: #f5f5f5; /* 淡灰色背景 */
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+}
+
+.sender {
+    color: #333; /* 发件人颜色 */
+}
+
+.subject {
+    color: #007bff; /* 主题颜色 */
+}
+
+.date {
+    color: #888; /* 日期颜色 */
+}
+
+/* 邮件正文样式 */
+.emailBody {
+    padding: 10px;
+}
+
+.bodyContent {
+    color: #333; /* 正文颜色 */
+}
+
+/* 解析事件样式 */
+.eventDetails {
+    font-weight: bold;
+    color: #007bff; /* 蓝色字体 */
+}
+
+/* Footer样式 */
+.footer {
+    padding: 10px;
+    text-align: right;
+}
+
+.button {
+    background-color: #007bff; /* 按钮背景颜色 */
+    color: #fff; /* 按钮文字颜色 */
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease; /* 添加过渡效果 */
+}
+
+.button:hover {
+    background-color: #0056b3; /* 按钮鼠标悬停时的背景颜色 */
+}
+
+/* 邮件正文样式 */
+.emailBody {
+    padding: 10px;
+    position: relative; /* 相对定位 */
+}
+
+.bodyContent {
+    color: #333; /* 正文颜色 */
+    overflow: hidden; /* 隐藏溢出部分文本 */
+    position: relative; /* 相对定位 */
+    max-height: 200px; /* 最大高度 */
+}
+
+/* 添加折叠效果 */
+.bodyContentOverlay {
+    position: absolute; /* 绝对定位 */
+    bottom: 0; /* 距离底部0px */
+    left: 0; /* 距离左侧0px */
+    width: 100%; /* 宽度100% */
+    height: 20px; /* 高度20px */
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* 从透明到白色的渐变背景 */
+}
+
+.container_check_user {
+    margin: 0 auto; /* 将页面水平居中 */
+    max-width: 800px; /* 设置页面最大宽度 */
+    padding: 0 20px; /* 左右边距为20px */
+}
+
+/* 添加回到顶部按钮的样式 */
+#scrollTopBtn {
+    display: none; /* 初始时隐藏按钮 */
+    position: fixed; /* 固定在页面上 */
+    bottom: 20px; /* 距离页面底部20px */
+    right: 20px; /* 距离页面右侧20px */
+    z-index: 99; /* 将按钮置于其他内容之上 */
+    border: none; /* 去除按钮边框 */
+    outline: none; /* 去除按钮聚焦时的边框 */
+    background-color: #007bff; /* 按钮背景颜色 */
+    color: white; /* 按钮文字颜色 */
+    cursor: pointer; /* 鼠标悬停时显示手型光标 */
+    padding: 15px; /* 按钮内边距 */
+    border-radius: 50%; /* 圆形按钮 */
+}
+
+/* 悬停时按钮背景颜色变暗 */
+#scrollTopBtn:hover {
+    background-color: #0056b3;
+}
+
+/*email_detail stlying*/
+/* 邮件详情容器样式 */
+.email-details {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.email-details h4, .email-details p {
+    color: #333;
+    line-height: 1.5;
+}
+
+.email-details pre {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    overflow: auto; /* 适当处理长文本 */
+}
+
+/* 表单样式 */
+.email-details form {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.email-details button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.email-details button:hover {
+    background-color: #0056b3;
+}
+
+/* 电子邮件视觉风格 */
+.email-details {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+
+.email-header {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.email-body {
+    padding: 20px;
+    line-height: 1.5;
+    color: #333;
+    font-size: 14px;
+}
+
+/* 表单美化 */
+.form-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-container input, .form-container button {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.form-container button {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.form-container button:hover {
+    background-color: #0056b3;
+}
+
+.form-container textarea {
+    width: 100%; /* 宽度调整为容器宽度 */
+    height: 150px; /* 设置一个固定的高度 */
+    padding: 10px; /* 增加内边距以提高阅读性 */
+    border: 1px solid #ccc; /* 统一边框风格 */
+    border-radius: 5px; /* 圆角风格与其他输入元素保持一致 */
+    box-sizing: border-box; /* 确保padding和border不会增加元素实际宽度 */
+    resize: vertical; /* 允许用户垂直调整大小 */
+}
+
+.form-container label {
+    display: block; /* 确保标签独占一行 */
+    margin-bottom: 5px; /* 增加标签与输入元素间的间距 */
+    color: #333; /* 提高标签颜色对比度 */
+    font-size: 14px; /* 适当的字体大小 */
+}
+
+.form-container input, .form-container textarea, .form-container button {
+    margin-bottom: 10px; /* 保持统一的元素间距 */
+}
+
+.container_email_detail{
+    max-width: 1200px; /* 最大宽度 */
+    margin-left: auto; /* 左侧外边距自动 */
+    margin-right: auto; /* 右侧外边距自动 */
+    padding-left: 20px; /* 左侧内边距 */
+    padding-right: 20px; /* 右侧内边距 */
+}
+
+.email-details {
+    padding-left: 20px; /* 左侧边距 */
+    padding-right: 20px; /* 右侧边距 */
+    /* 保持其他样式不变 */
+}
+
+.form-container {
+    padding-left: 20px; /* 左侧边距 */
+    padding-right: 20px; /* 右侧边距 */
+    /* 保持其他样式不变 */
+}
