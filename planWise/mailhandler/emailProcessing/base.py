@@ -65,7 +65,8 @@ def parse_email(data):
                 body = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
                 break
     else:
-        body = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
+        text = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
+        body = clean_text(text)
 
     # 处理时间
     utc_date = datetime.fromtimestamp(envelope.date.timestamp(), timezone.utc)
