@@ -14,9 +14,8 @@ class CustomUserChangeForm(UserChangeForm):
         model = CustomUser
         fields = ('username', 'outlook_email', 'secondary_password')
 
-
 class UserForm(forms.ModelForm):
-    secondary_password = forms.CharField(widget=forms.PasswordInput(), label='Secondary Password')
+    secondary_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'password-input', 'placeholder': 'Enter your secondary password'}), label='Secondary Password')
 
     class Meta:
         model = CustomUser
@@ -24,3 +23,8 @@ class UserForm(forms.ModelForm):
         widgets = {
             'outlook_email': forms.EmailInput(attrs={'placeholder': 'Enter your Outlook email'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        if self.instance and self.instance.outlook_email:
+            self.fields['outlook_email'].widget = forms.TextInput(attrs={'readonly': True, 'value': self.instance.outlook_email})

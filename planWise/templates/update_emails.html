@@ -1,40 +1,59 @@
 {% extends "base.html" %}
-{% block title %}
-    更新
-{% endblock %}
 {% block content %}
+<div class="container">
     <h1>Update Your Emails</h1>
     <form id="updateForm" method="post">
         {% csrf_token %}
-        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+        <div class="form-container">
             <h3>Update for {{ user.username }}</h3>
-            {{ form.as_p }}
+            <p>
+                {{ form.outlook_email.label_tag }}
+                {{ form.outlook_email }}
+            </p>
+            <div class="password-wrapper">
+                {{ form.secondary_password.label_tag }}
+                {{ form.secondary_password }}
+                <button type="button" onclick="togglePasswordVisibility()" class="toggle-password">Show</button>
+            </div>
         </div>
         <button type="submit">Submit</button>
     </form>
     <div id="loadingMessage" style="display:none;">Please wait, validating your secondary password and saving emails...</div>
-    <script>
-        document.getElementById('updateForm').onsubmit = function(event) {
-            event.preventDefault();
-            var form = this;
-            var data = new FormData(form);
-            document.getElementById('loadingMessage').style.display = 'block';
+</div>
+<script>
+    document.getElementById('updateForm').onsubmit = function(event) {
+        event.preventDefault();
+        var form = this;
+        var data = new FormData(form);
+        document.getElementById('loadingMessage').style.display = 'block';
 
-            fetch(form.action, {
-                method: 'POST',
-                body: data,
-                headers: {
-                    'X-CSRFToken': data.get('csrfmiddlewaretoken')
-                }
-            }).then(response => response.json())
-            .then(data => {
-                document.getElementById('loadingMessage').style.display = 'none';
-                if (data.status === 'success') {
-                    window.location.href = "{% url 'check-users' %}";  // Ensure this URL is correct and matches the name in your urls.py
-                } else {
-                    alert(data.message);  // Simple error handling
-                }
-            });
-        };
-    </script>
+        fetch(form.action, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'X-CSRFToken': data.get('csrfmiddlewaretoken')
+            }
+        }).then(response => response.json())
+        .then(data => {
+            document.getElementById('loadingMessage').style.display = 'none';
+            if (data.status === 'success') {
+                window.location.href = "{% url 'check-users' %}";
+            } else {
+                alert(data.message);
+            }
+        });
+    };
+
+    function togglePasswordVisibility() {
+        var passwordInput = document.querySelector('.password-wrapper input');
+        var toggleButton = document.querySelector('.toggle-password');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleButton.textContent = 'Hide';
+        } else {
+            passwordInput.type = 'password';
+            toggleButton.textContent = 'Show';
+        }
+    }
+</script>
 {% endblock %}

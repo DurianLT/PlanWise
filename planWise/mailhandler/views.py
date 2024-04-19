@@ -8,7 +8,7 @@ from mailhandler.models import Email
 import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from .forms import EventForm
 from .models import Email

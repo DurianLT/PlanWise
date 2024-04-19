@@ -1,13 +1,25 @@
-{% if request.user.is_authenticated %}
-    <p>Hi {{ request.user.username }}!</p>
-    <li><a href="{% url 'check-users' %}">My email</a></li>
-    <li><a href="{% url 'update-email' %}">update-email</a></li>
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-{% else %}
-    <p>You are not logged in.</p>
-    <a href="{% url 'login' %}">login</a>
-    <a href="{% url 'register' %}">Sign Up</a>
-{% endif %}
+<nav class="navbar">
+    {% if request.user.is_authenticated %}
+        <div class="nav-links">
+            <a href="{% url 'check-users' %}">My Email</a>
+            <span>|</span>
+            <a href="{% url 'update-email' %}">Update Email</a>
+        </div>
+        <div class="user-info">
+            <span>Hi {{ request.user.username }}!</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="nav-links">
+            <a href="{% url 'login' %}">Login</a>
+            <span>|</span>
+            <a href="{% url 'register' %}">Sign Up</a>
+        </div>
+        <div class="user-info">
+            <span>You are not logged in.</span>
+        </div>
+    {% endif %}
+</nav>

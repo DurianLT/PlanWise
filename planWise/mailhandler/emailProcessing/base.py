@@ -10,7 +10,6 @@ import ssl
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
-
 def clean_text(html_content):
     # 使用BeautifulSoup解析HTML内容
     soup = BeautifulSoup(html_content, 'lxml')
@@ -24,7 +23,6 @@ def clean_text(html_content):
 
     return cleaned_text
 
-
 def getMailHostPort(userName):
     if 'gmail.com' in userName:
         host = 'imap.gmail.com'
@@ -37,7 +35,6 @@ def getMailHostPort(userName):
         port = 993
 
     return host, port
-
 
 def parse_email(data):
     envelope = data[b'ENVELOPE']

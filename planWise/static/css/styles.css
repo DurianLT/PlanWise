@@ -1,0 +1,179 @@
+/* Reset default margin and padding */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar styling */
+.navbar {
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.nav-links span {
+    margin-right: 10px;
+    color: white;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info span {
+    margin-right: 20px;
+    color: white;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.nav-links a:hover, .user-info a:hover {
+    text-decoration: underline;
+}
+
+/* update_email stylying */
+
+#updateForm {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#updateForm h3 {
+    color: #333;
+}
+
+#updateForm label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+#updateForm input, #updateForm button {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+#updateForm button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#updateForm button:hover {
+    background-color: #0056b3;
+}
+
+.toggle-password {
+    padding: 6px 12px;
+    font-size: 0.9em;
+    color: #333;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.toggle-password:hover {
+    background-color: #e2e6ea;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input {
+    flex-grow: 1;
+}
+
+.toggle-password {
+    margin-left: 10px;
+}
+
+#updateForm button, .toggle-password {
+    padding: 5px 10px;  /* 减少 padding 以减小按钮大小 */
+    font-size: 0.8em;   /* 调整字体大小为适中 */
+    width: auto;        /* 设置宽度为自动，根据内容调整 */
+    border-radius: 4px; /* 保持圆角风格 */
+    cursor: pointer;    /* 保持指针样式为手型 */
+}
+
+#updateForm button:hover, .toggle-password:hover {
+    background-color: #0056b3; /* 鼠标悬停时的背景色 */
+}
+
+#updateForm button {
+    background-color: #007bff; /* Submit按钮的背景色 */
+    color: white;               /* 字体颜色 */
+    border: none;               /* 无边框 */
+}
+
+.toggle-password {
+    margin-left: 10px;      /* 与密码输入框的间距 */
+    color: #333;            /* 字体颜色 */
+    background-color: #f8f9fa; /* 背景颜色 */
+    border: 1px solid #ccc; /* 边框 */
+}
+
+.toggle-password:hover {
+    background-color: #e2e6ea; /* 鼠标悬停时按钮的背景色变化 */
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto; /* Centers the container */
+    padding: 0 20px; /* Add padding to the sides */
+}
+
+.form-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* Your existing CSS styles for the form elements */
+
+#updateForm button {
+    width: 100%; /* Make Submit button width same as parent container */
+}
+
+/* Additional margin for the parent div */
+.form-container {
+    margin: 20px 0; /* Add top and bottom margin */
+}
+
+
