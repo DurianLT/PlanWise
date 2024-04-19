@@ -39,6 +39,7 @@
                                     <p>Date: ${new Date(email.date).toISOString().slice(0, 19).replace('T', ' ')}</p>
                                     <div>Body: <pre>${email.body}</pre></div>
                                     <div>${eventDetailsHtml}</div>
+                                    <a href="/email/${email.pk}/" class="button">查看详情</a>
                                 </li>`
                             );
                         });
@@ -96,6 +97,7 @@
                 </div>
                 {% else %}
                 {% endif %}
+                <a href="{% url 'email_detail' pk=email_data.pk %}" class="button">查看详情</a>
             </li>
         {% endfor %}
     </ul>
