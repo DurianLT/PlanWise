@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get email schedule.</title>
+</head>
+<body>
+    {% if user.is_authenticated %}
+            <li><a href="{% url 'check-users/' %}">My email</a></li>
+            <li><a href="{% url 'update-email' %}">update-email</a></li>
+        {% else %}
+            <a>error</a>
+        {% endif %}
+        <p><a href="{% url 'logout' %}">logout</a></p>
+    {% else %}
+        <p>You are not logged in.</p>
+        <a href="{% url 'login' %}">login</a>
+        <a href="{% url 'register' %}">Sign Up</a>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
