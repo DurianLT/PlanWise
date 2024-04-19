@@ -9,19 +9,27 @@
             <th>事件</th>
             <th>地点</th>
             <th>备注</th>
+            <th>倒计时</th>
         </tr>
     </thead>
     <tbody>
         {% for event in events %}
         <tr>
-            <td>{{ event.date|date:"Y-m-d H:i" }}</td>
+            <td>
+                {% if event.date %}
+                    {{ event.date|date:"Y-m-d H:i" }}
+                {% else %}
+                    暂无日期
+                {% endif %}
+            </td>
             <td>{{ event.event }}</td>
             <td>{{ event.address }}</td>
             <td>{{ event.comment }}</td>
+            <td>{{ event.countdown }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4">没有即将到来的日程。</td>
+            <td colspan="5">没有即将到来的日程。</td>
         </tr>
         {% endfor %}
     </tbody>
