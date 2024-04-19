@@ -4,6 +4,10 @@
             <a href="{% url 'check-users' %}">My Email</a>
             <span>|</span>
             <a href="{% url 'update-email' %}">Update Email</a>
+            <span>|</span>
+            <a href="{% url 'new_events' %}">New Events</a>
+            <span>|</span>
+            <a href="{% url 'event_list' %}">My Events</a>
         </div>
         <div class="user-info">
             <span>Hi {{ request.user.username }}!</span>

@@ -1,6 +1,6 @@
 from . import models
 from django.shortcuts import render
-from django.views.generic import CreateView, ListView, DetailView
+from django.views.generic import CreateView, ListView, DetailView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -24,17 +24,25 @@ class CreateEventView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user_id = self.request.user.id
         return super().form_valid(form)
-
-
-class EventListView(LoginRequiredMixin, ListView):
+    
+class EventUpdateView(UpdateView):
     model = models.Event
-    template_name = 'event_list.html'
-    context_object_name = 'events'
+    fields = ['date', 'event', 'address', 'comment']
+    template_name = 'edit_event.html'
+
+    def get_success_url(self):
+        return reverse_lazy('event_list')  # 假设你有一个显示所有事件的视图
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+class EventDeleteView(DeleteView):
+    model = models.Event
+    template_name = 'delete_event.html'
+    success_url = reverse_lazy('event_list')
 
     def get_queryset(self):
-        # 获取当前用户的所有日程，并按日期排序
-        return models.Event.objects.filter(user=self.request.user).order_by('date')
-
+        return super().get_queryset().filter(user=self.request.user)  # 仅允许用户删除自己的事件
 
 class EventDetailView(LoginRequiredMixin, DetailView):
     model = models.Event
@@ -42,15 +50,22 @@ class EventDetailView(LoginRequiredMixin, DetailView):
     template_name = 'event_detail.html'
     fields = '__all__'
 
-
 class CountdownView(ListView):
     model = models.Event
-    template_name = 'events_countdown.html'
+    template_name = 'event_list.html'
     context_object_name = 'events'
 
     def get_queryset(self):
+        # 获取排序参数
+        sort = self.request.GET.get('sort', 'date')  # 默认按日期排序
         # 确保只获取当前用户的日程
-        queryset = super().get_queryset().filter(user=self.request.user).order_by('date')
+        if sort == 'countdown':
+            # 如果排序依据是倒计时，这里需要一种方法来排序，可能需要额外的逻辑
+            queryset = super().get_queryset().filter(user=self.request.user)
+            queryset = sorted(queryset, key=lambda x: (x.date - timezone.now()).total_seconds())
+        else:
+            # 默认按日期排序
+            queryset = super().get_queryset().filter(user=self.request.user).order_by('date')
         return queryset
 
     def get_context_data(self, **kwargs):

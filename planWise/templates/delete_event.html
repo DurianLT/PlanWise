@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="confirmation-form">
+    <form method="post">
+        {% csrf_token %}
+        <p>确定要删除 "{{ object.event }}" 这个事件吗？</p>
+        <input type="submit" value="确认删除">
+    </form>
+</div>
+{% endblock %}
+

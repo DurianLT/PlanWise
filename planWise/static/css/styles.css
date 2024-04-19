@@ -483,3 +483,191 @@ h1 {
     padding-right: 20px; /* 右侧边距 */
     /* 保持其他样式不变 */
 }
+
+/* new events styling */
+.form-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container label {
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-container input, 
+.form-container textarea, 
+.form-container select, 
+.form-container button {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-container button {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.form-container button:hover {
+    background-color: #0056b3;
+}
+
+.table-container {
+    max-width: 800px;
+    margin: 20px auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden; /* 使得表格圆角边框不被内部元素影响 */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse; /* 移除表格间隙 */
+    background-color: #fff;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px 20px;
+    border-bottom: 1px solid #ccc; /* 添加底部边框 */
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1; /* 鼠标悬停时变色 */
+}
+
+thead tr {
+    font-weight: bold;
+}
+
+.btn {
+    padding: 8px 15px; /* 增加内边距以使按钮更容易点击 */
+    margin: 0 5px 5px 0; /* 右侧和下方增加边距以防止按钮挤在一起 */
+    text-decoration: none;
+    color: white;
+    border-radius: 4px;
+    text-align: center;
+    display: inline-block; /* 确保按钮不会断行，除非必要 */
+    transition: background-color 0.3s; /* 平滑背景色过渡效果 */
+}
+
+.btn-edit {
+    background-color: #007BFF;  /* 蓝色背景 */
+}
+
+.btn-edit:hover {
+    background-color: #0056b3;  /* 深蓝色背景 */
+}
+
+.btn-delete {
+    background-color: #dc3545;  /* 红色背景 */
+}
+
+.btn-delete:hover {
+    background-color: #c82333;  /* 深红色背景 */
+}
+
+thead th:last-child, tbody td:last-child {
+    width: 120px; /* 根据需要调整宽度 */
+}
+
+/* 在你的CSS文件中添加这些样式 */
+.confirmation-form {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+.confirmation-form p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.confirmation-form input[type="submit"] {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #dc3545; /* 红色背景，用于删除按钮 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.confirmation-form input[type="submit"]:hover {
+    background-color: #c82333; /* 深红色背景 */
+}
+
+/* 在你的CSS文件中添加这些样式 */
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container label {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-container input,
+.form-container textarea,
+.form-container select {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 22px); /* Adjust width to account for padding and border */
+    box-sizing: border-box;
+}
+
+.form-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.form-container button:hover {
+    background-color: #0056b3;
+}

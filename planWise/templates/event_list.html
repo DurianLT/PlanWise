@@ -1,30 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>我的日程</h2>
-<table>
-    <thead>
-        <tr>
-            <th>日期</th>
-            <th>事件</th>
-            <th>地点</th>
-            <th>备注</th>
-        </tr>
-    </thead>
-    <tbody>
 
-        {% for event in events %}
-        <tr>
-            <td>{{ event.date|date:"Y-m-d H:i" }}</td>
-            <td>{{ event.event }}</td>
-            <td>{{ event.address }}</td>
-            <td>{{ event.comment }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">没有即将到来的日程。</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-container">
+
+    <h2>我的日程</h2>
+    <a href="?sort=date">按日期排序</a> | <a href="?sort=countdown">按倒计时排序</a>
+    <table>
+        <thead>
+            <tr>
+                <th>日期</th>
+                <th>事件</th>
+                <th>地点</th>
+                <th>备注</th>
+                <th>倒计时</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td>
+                    {% if event.date %}
+                        {{ event.date|date:"Y-m-d H:i" }}
+                    {% else %}
+                        暂无日期
+                    {% endif %}
+                </td>
+                <td>{{ event.event }}</td>
+                <td>{{ event.address }}</td>
+                <td>{{ event.comment }}</td>
+                <td>{{ event.countdown }}</td>
+                <td>
+                    <a href="{% url 'edit_event' pk=event.pk %}" class="btn btn-edit">编辑</a>
+                    <a href="{% url 'delete_event' pk=event.pk %}" class="btn btn-delete">删除</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">没有即将到来的日程。</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
