@@ -2,5 +2,4 @@
 /planWise/planWise/__pycache__
 /planWise/user/__pycache__
 /PlanWise/planWise/db.sqlite3
-/PlanWise/planWise/user/migrations
-/PlanWise/planWise/mailhandler/migrations
+/env
