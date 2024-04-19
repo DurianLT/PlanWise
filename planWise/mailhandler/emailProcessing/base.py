@@ -1,5 +1,8 @@
 import html
+import json
 import re
+
+import requests
 from imapclient import IMAPClient
 from email.header import decode_header
 from email import message_from_bytes
@@ -208,3 +211,45 @@ def getNew10ID(userName, password):
         client.logout()
 
     return latest_emails_ids
+
+
+def analyze_email_content(email_content):
+    url = "http://154.44.10.169:1145/analyze_email"
+    data = {"email_content": email_content}
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Failed to get a successful response from the API. Status Code:", response.status_code)
+        return None
+
+
+def select_best_result(results):
+    best_score = 0
+    best_result = None
+
+    for result in results:
+        # 检查结果类型，如果不是字典则尝试解析为字典
+        if isinstance(result, str):
+            try:
+                result = json.loads(result)
+            except json.JSONDecodeError:
+                continue  # 如果字符串不是有效的JSON，跳过这个结果
+        elif not isinstance(result, dict):
+            continue  # 如果结果既不是字符串也不是字典，跳过
+
+        score = 0
+        if result.get('date'):
+            score += 10
+        if result.get('time'):
+            score += 5
+        if result.get('events') and result.get('isEvents') == 'True':
+            score += 10
+        if result.get('place'):
+            score += 5
+
+        if score > best_score:
+            best_score = score
+            best_result = result
+
+    return best_result
