@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Emails</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}
+    Update Emails
+{% endblock %}
+{% block content %}
     <h1>Update Your Emails</h1>
     <form id="updateForm" method="post">
         {% csrf_token %}
@@ -30,15 +27,14 @@
                     'X-CSRFToken': data.get('csrfmiddlewaretoken')
                 }
             }).then(response => response.json())
-              .then(data => {
-                  document.getElementById('loadingMessage').style.display = 'none';
-                  if (data.status === 'success') {
-                      window.location.href = "{% url 'check-users' %}";  // Ensure this URL is correct and matches the name in your urls.py
-                  } else {
-                      alert(data.message);  // Simple error handling
-                  }
-              });
+            .then(data => {
+                document.getElementById('loadingMessage').style.display = 'none';
+                if (data.status === 'success') {
+                    window.location.href = "{% url 'check-users' %}";  // Ensure this URL is correct and matches the name in your urls.py
+                } else {
+                    alert(data.message);  // Simple error handling
+                }
+            });
         };
     </script>
-</body>
-</html>
+{% endblock %}

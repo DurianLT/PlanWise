@@ -1,0 +1,13 @@
+{% if user.is_authenticated %}
+    <p>Hi {{ user.username }}!</p>
+    <li><a href="{% url 'check-users' %}">My email</a></li>
+    <li><a href="{% url 'update-email' %}">update-email</a></li>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+{% else %}
+    <p>You are not logged in.</p>
+    <a href="{% url 'login' %}">login</a>
+    <a href="{% url 'register' %}">Sign Up</a>
+{% endif %}
