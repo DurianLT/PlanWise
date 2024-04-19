@@ -6,6 +6,8 @@ import requests
 from imapclient import IMAPClient
 from email.header import decode_header
 from email import message_from_bytes
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import ssl
 
 
@@ -63,10 +65,13 @@ def parse_email(data):
                 body = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
                 break
     else:
-        text = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
-        body = clean_text(text)
+        body = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
 
-    return from_decoded, subject, envelope.date, body
+    # 处理时间
+    utc_date = datetime.fromtimestamp(envelope.date.timestamp(), timezone.utc)
+    beijing_date = utc_date.astimezone(ZoneInfo("Asia/Shanghai"))
+
+    return from_decoded, subject, beijing_date, body
 
 
 def loginTest(userName, password):
