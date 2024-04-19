@@ -1,8 +1,18 @@
+import html
+import re
 from imapclient import IMAPClient
 from email.header import decode_header
 from email import message_from_bytes
 import ssl
 
+def clean_text(text):
+    """清理邮件正文中的多余空格并保留换行"""
+    # 只移除行内的多余空格，不影响换行符
+    lines = text.splitlines()
+    cleaned_lines = [re.sub(r'\s+', ' ', line).strip() for line in lines]
+    # 使用html.unescape处理HTML实体
+    cleaned_text = html.unescape('\n'.join(cleaned_lines))
+    return cleaned_text
 
 def loginTest(userName, password):
     HOST = 'outlook.office365.com'
@@ -72,6 +82,8 @@ def getMailForID(userName, password, specific_msg_id):
                         break  # 可以根据需要调整逻辑，以获取 'text/html' 或其他格式的内容
             else:
                 body = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
+
+            body = clean_text(body)
 
         except ValueError as e:
             print(e)
