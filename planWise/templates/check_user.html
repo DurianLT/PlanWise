@@ -18,13 +18,27 @@
                     if (data.status === 'success') {
                         $('#emailList').empty();  // 清空邮件列表
                         data.emails.forEach(function(email) {
+                            var eventDetailsHtml = ''; // 初始化事件详情字符串
+                            if (email.event_details && email.event_details.isEvents === 'True') {
+                                eventDetailsHtml = `<div>解析出了事件
+                                                        <p>日期：${email.event_details.date}</p>
+                                                        <p>事件：${email.event_details.events}</p>`;
+                                if (email.event_details.time) {
+                                    eventDetailsHtml += `<p>时间：${email.event_details.time}</p>`;
+                                }
+                                eventDetailsHtml += `<p>地点：${email.event_details.place}</p>
+                                                    </div>`;
+                            } else {
+                                eventDetailsHtml = 'No events found.';
+                            }
+
                             $('#emailList').append(
                                 `<li>
                                     <h4>From: ${email.from_email}</h4>
                                     <p>Subject: ${email.subject}</p>
                                     <p>Date: ${new Date(email.date).toISOString().slice(0, 19).replace('T', ' ')}</p>
                                     <div>Body: <pre>${email.body}</pre></div>
-                                    <div>Event Details: ${email.event_details || 'No events found.'}</div>
+                                    <div>${eventDetailsHtml}</div>
                                 </li>`
                             );
                         });
@@ -43,6 +57,7 @@
         setInterval(fetchAndUpdateEmails, 30000);  // 每30秒检查一次
     });
     </script>
+
     {% endif %}
 
 
@@ -81,10 +96,6 @@
                 </div>
                 {% else %}
                 {% endif %}
-
-
-
-
             </li>
         {% endfor %}
     </ul>
