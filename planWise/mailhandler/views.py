@@ -225,9 +225,8 @@ class EmailDetailView(DetailView):
 
 
 
-class EventCreateView(FormView):
-
-    template_name = 'event_create.html'
+class EmailEventCreateView(FormView):
+    template_name = 'email_event_create.html'
     form_class = EventForm
     success_url = reverse_lazy('check-users')
 
