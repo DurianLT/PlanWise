@@ -1,12 +1,16 @@
 import json
 from django.http import JsonResponse
-from django.views.generic import DetailView
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, FormView
 from mailhandler.emailProcessing.base import getMailsForIDs, getMailForID, analyze_email_content, select_best_result, getNew10ID, loginTest
 from user.forms import UserForm
 from mailhandler.models import Email
+import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.shortcuts import render
+
+from .forms import EventForm
 from .models import Email
 from .emailProcessing.base import getNew10ID, getMailsForIDs, getNewID, getMailsForRange
 
@@ -159,6 +163,7 @@ class UpdateUserView(LoginRequiredMixin, View):
         return f"{result}"
 
 
+
 class EmailDetailView(DetailView):
     model = Email
     context_object_name = 'email_data'
@@ -168,12 +173,65 @@ class EmailDetailView(DetailView):
         # 这里过滤只允许用户查看自己的邮件
         return super().get_queryset().filter(user=self.request.user)
 
+    def safe_loads(json_string):
+        try:
+            return json.loads(json_string)
+        except json.JSONDecodeError:
+            # 如果标准解析失败，尝试修复常见的问题
+            try:
+                # 替换单引号为双引号，并将None转换为null
+                corrected_json_string = json_string.replace("'", '"').replace("None", "null")
+                return json.loads(corrected_json_string)
+            except json.JSONDecodeError as e:
+                print("JSON 解析失败:", e)
+                return None  # 或返回适当的默认值或错误信息
+
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
         email = context['email_data']
-        if email.event_details != 'None':
-            event_details = safe_loads(email.event_details)
+
+        # 判断并解析事件详情
+        event_details = safe_loads(email.event_details) if email.event_details != 'None' else None
+
+        # 根据事件详情初始化表单
+        if event_details:
+            # 如果提供了时间，则将日期和时间结合起来
+            if 'time' in event_details and event_details['time']:
+                datetime_str = f"{event_details.get('date', datetime.datetime.now().date())} {event_details['time']}"
+                datetime_obj = datetime.datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+            else:
+                datetime_obj = datetime.datetime.strptime(event_details.get('date', datetime.datetime.now().date()),
+                                                          '%Y-%m-%d')
+
+            initial_data = {
+                'date': datetime_obj,  # 使用 datetime 对象
+                'address': event_details.get('place', ''),
+                'event': event_details.get('events', ''),
+                'comment': ''
+            }
         else:
-            event_details = email.event_details
-        context['email_data'].event_details = event_details
+            initial_data = {
+                'date': datetime.datetime.now().date(),
+                'address': '',
+                'event': '',
+                'comment': ''
+            }
+
+        # 使用初始化数据创建表单
+        context['event_form'] = EventForm(initial=initial_data)
+
         return context
+
+
+
+class EventCreateView(FormView):
+
+    template_name = 'event_create.html'
+    form_class = EventForm
+    success_url = reverse_lazy('check-users')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.save()
+        return super().form_valid(form)
