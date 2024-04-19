@@ -45,7 +45,7 @@ def safe_loads(json_string):
 
 class CheckUserView(LoginRequiredMixin, View):
     template_name = 'check_user.html'
-    login_url = '/login/'
+    login_url = 'login'
 
     def get(self, request):
         user = request.user
