@@ -6,9 +6,9 @@ import requests
 from imapclient import IMAPClient
 from email.header import decode_header
 from email import message_from_bytes
+import ssl
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-import ssl
 
 
 def clean_text(text):
