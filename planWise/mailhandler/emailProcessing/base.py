@@ -30,6 +30,42 @@ def getMailHostPort(userName):
     return host, port
 
 
+def parse_email(data):
+    envelope = data[b'ENVELOPE']
+    email_message = message_from_bytes(data[b'RFC822'])
+
+    # 解码发件人信息
+    from_ = envelope.from_[0]
+    from_decoded = "{}@{}".format(from_.mailbox.decode(), from_.host.decode())
+
+    # 解码主题
+    subject_encoded = envelope.subject
+    subject = ''
+    if isinstance(subject_encoded, bytes):
+        subject_encoded = subject_encoded.decode('utf-8', errors='replace')
+    subject_decoded = decode_header(subject_encoded)
+    for part, encoding in subject_decoded:
+        if encoding:
+            subject += part.decode(encoding, errors='replace')
+        else:
+            subject += part if isinstance(part, str) else part.decode('utf-8', errors='replace')
+
+    # 提取邮件正文
+    body = ""
+    if email_message.is_multipart():
+        for part in email_message.walk():
+            ctype = part.get_content_type()
+            cdispo = str(part.get('Content-Disposition'))
+            if ctype == 'text/plain' and 'attachment' not in cdispo:
+                body = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
+                break
+    else:
+        text = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
+        body = clean_text(text)
+
+    return from_decoded, subject, envelope.date, body
+
+
 def loginTest(userName, password):
     host, port = getMailHostPort(userName)
 
@@ -47,138 +83,50 @@ def loginTest(userName, password):
 
 def getMailForID(userName, password, specific_msg_id):
     host, port = getMailHostPort(userName)
-
-    # 使用SSL连接
     context = ssl.create_default_context()
 
     with IMAPClient(host, port=port, ssl_context=context) as client:
-        # 登录
         client.login(userName, password)
-
-        # 选择邮箱，使用readonly模式以防止意外地修改任何邮件
         client.select_folder('INBOX', readonly=True)
 
         results = []
-
-        # 尝试获取指定邮件ID的邮件详细信息
         try:
             data = client.fetch([specific_msg_id], ['ENVELOPE', 'RFC822'])
             if specific_msg_id not in data:
                 return "ID not found"
 
-            data = data[specific_msg_id]
-            envelope = data[b'ENVELOPE']
-            email_message = message_from_bytes(data[b'RFC822'])  # 解析邮件字节
-
-            # 解码发件人信息
-            from_ = envelope.from_[0]
-            from_decoded = "{}@{}".format(from_.mailbox.decode(), from_.host.decode())
-
-            # 解码主题
-            subject_encoded = envelope.subject
-            if isinstance(subject_encoded, bytes):
-                subject_encoded = subject_encoded.decode('utf-8', errors='replace')
-            subject_decoded = decode_header(subject_encoded)
-            subject = ''
-            for part, encoding in subject_decoded:
-                if encoding:
-                    subject += part.decode(encoding, errors='replace')
-                else:
-                    subject += part if isinstance(part, str) else part.decode('utf-8', errors='replace')
-
-            # 提取邮件正文
-            body = ""
-            if email_message.is_multipart():
-                for part in email_message.walk():
-                    ctype = part.get_content_type()
-                    cdispo = str(part.get('Content-Disposition'))
-
-                    # 跳过附件，只获取文本内容
-                    if ctype == 'text/plain' and 'attachment' not in cdispo:
-                        body = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
-                        break  # 可以根据需要调整逻辑，以获取 'text/html' 或其他格式的内容
-            else:
-                body = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
-
-            body = clean_text(body)
-
-        except ValueError as e:
-            print(e)
-            'error'
+            from_decoded, subject, date, body = parse_email(data[specific_msg_id])
+            results.append((from_decoded, subject, date, body, specific_msg_id))
         except Exception as e:
-            print("An error occurred:", str(e))
+            print(f"An error occurred: {str(e)}")
             return 'error'
-
-        results.append((from_decoded, subject, envelope.date, body, specific_msg_id))
-
-        # 注销
-        client.logout()
+        finally:
+            client.logout()
 
         return results
 
 
 def getMailsForRange(userName, password, id_start, id_end):
     host, port = getMailHostPort(userName)
-
-    # 使用SSL连接
     context = ssl.create_default_context()
 
     with IMAPClient(host, port=port, ssl_context=context) as client:
-        # 登录
         client.login(userName, password)
-
-        # 选择邮箱，使用readonly模式以防止意外地修改任何邮件
         client.select_folder('INBOX', readonly=True)
 
-        # 存储结果的列表
         results = []
 
-        # 遍历指定的ID范围
         for msg_id in range(id_start, id_end + 1):
             try:
                 data = client.fetch([msg_id], ['ENVELOPE', 'RFC822'])
                 if msg_id not in data:
                     continue  # 如果邮件ID不存在，则跳过
 
-                data = data[msg_id]
-                envelope = data[b'ENVELOPE']
-                email_message = message_from_bytes(data[b'RFC822'])
-
-                # 解码发件人信息
-                from_ = envelope.from_[0]
-                from_decoded = "{}@{}".format(from_.mailbox.decode(), from_.host.decode())
-
-                # 解码主题
-                subject_encoded = envelope.subject
-                if isinstance(subject_encoded, bytes):
-                    subject_encoded = subject_encoded.decode('utf-8', errors='replace')
-                subject_decoded = decode_header(subject_encoded)
-                subject = ''
-                for part, encoding in subject_decoded:
-                    if encoding:
-                        subject += part.decode(encoding, errors='replace')
-                    else:
-                        subject += part if isinstance(part, str) else part.decode('utf-8', errors='replace')
-
-                # 提取邮件正文
-                body = ""
-                if email_message.is_multipart():
-                    for part in email_message.walk():
-                        ctype = part.get_content_type()
-                        cdispo = str(part.get('Content-Disposition'))
-                        if ctype == 'text/plain' and 'attachment' not in cdispo:
-                            body = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
-                            break
-                else:
-                    body = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
-
-                # 添加到结果列表
-                results.append((from_decoded, subject, envelope.date, body, msg_id))
-
+                from_decoded, subject, date, body = parse_email(data[msg_id])
+                results.append((from_decoded, subject, date, body, msg_id))
             except Exception as e:
                 print(f"Error fetching mail ID {msg_id}: {str(e)}")
 
-        # 注销
         client.logout()
 
         return results
@@ -186,66 +134,25 @@ def getMailsForRange(userName, password, id_start, id_end):
 
 def getMailsForIDs(userName, password, ids):
     host, port = getMailHostPort(userName)
-
-    # 使用SSL连接
     context = ssl.create_default_context()
 
     with IMAPClient(host, port=port, ssl_context=context) as client:
-        # 登录
         client.login(userName, password)
-
-        # 选择邮箱，使用readonly模式以防止意外地修改任何邮件
         client.select_folder('INBOX', readonly=True)
 
-        # 存储结果的列表
         results = []
 
-        # 遍历ID列表
         for msg_id in ids:
             try:
                 data = client.fetch([msg_id], ['ENVELOPE', 'RFC822'])
                 if msg_id not in data:
                     continue  # 如果邮件ID不存在，则跳过
 
-                data = data[msg_id]
-                envelope = data[b'ENVELOPE']
-                email_message = message_from_bytes(data[b'RFC822'])
-
-                # 解码发件人信息
-                from_ = envelope.from_[0]
-                from_decoded = "{}@{}".format(from_.mailbox.decode(), from_.host.decode())
-
-                # 解码主题
-                subject_encoded = envelope.subject
-                if isinstance(subject_encoded, bytes):
-                    subject_encoded = subject_encoded.decode('utf-8', errors='replace')
-                subject_decoded = decode_header(subject_encoded)
-                subject = ''
-                for part, encoding in subject_decoded:
-                    if encoding:
-                        subject += part.decode(encoding, errors='replace')
-                    else:
-                        subject += part if isinstance(part, str) else part.decode('utf-8', errors='replace')
-
-                # 提取邮件正文
-                body = ""
-                if email_message.is_multipart():
-                    for part in email_message.walk():
-                        ctype = part.get_content_type()
-                        cdispo = str(part.get('Content-Disposition'))
-                        if ctype == 'text/plain' and 'attachment' not in cdispo:
-                            body = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
-                            break
-                else:
-                    body = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
-
-                # 添加到结果列表
-                results.append((from_decoded, subject, envelope.date, body, msg_id))
-
+                from_decoded, subject, date, body = parse_email(data[msg_id])
+                results.append((from_decoded, subject, date, body, msg_id))
             except Exception as e:
                 print(f"Error fetching mail ID {msg_id}: {str(e)}")
 
-        # 注销
         client.logout()
 
         return results

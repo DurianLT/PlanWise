@@ -13,16 +13,6 @@ from user.models import CustomUser
 import imaplib
 
 
-def clean_text(text):
-    """清理邮件正文中的多余空格并保留换行"""
-    # 只移除行内的多余空格，不影响换行符
-    lines = text.splitlines()
-    cleaned_lines = [re.sub(r'\s+', ' ', line).strip() for line in lines]
-    # 使用html.unescape处理HTML实体
-    cleaned_text = html.unescape('\n'.join(cleaned_lines))
-    return cleaned_text
-
-
 # 登陆邮箱并读取原始邮件
 def get_mail(email_address, password):
     try:
