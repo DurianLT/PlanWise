@@ -6,10 +6,9 @@ import html
 import re
 from django.core.management.base import BaseCommand
 from mailhandler.models import Email
-import imaplib
 import email
 from email.header import decode_header, make_header
-from bs4 import BeautifulSoup  # type: ignore
+from bs4 import BeautifulSoup
 from user.models import CustomUser
 import imaplib
 

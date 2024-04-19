@@ -16,7 +16,7 @@ def clean_text(text):
     return cleaned_text
 
 
-def loginTest(userName, password):
+def getMailHostPort(userName):
     if 'gmail.com' in userName:
         host = 'imap.gmail.com'
         port = 993
@@ -24,8 +24,14 @@ def loginTest(userName, password):
         host = 'outlook.office365.com'
         port = 993
     else:
-        print("Unsupported email service.")
-        return False
+        host = 'imap.gmail.com'
+        port = 993
+
+    return host, port
+
+
+def loginTest(userName, password):
+    host, port = getMailHostPort(userName)
 
     # 使用SSL连接
     context = ssl.create_default_context()
@@ -40,15 +46,7 @@ def loginTest(userName, password):
 
 
 def getMailForID(userName, password, specific_msg_id):
-    if 'gmail.com' in userName:
-        host = 'imap.gmail.com'
-        port = 993
-    elif 'outlook.com' in userName:
-        host = 'outlook.office365.com'
-        port = 993
-    else:
-        print("Unsupported email service.")
-        return False
+    host, port = getMailHostPort(userName)
 
     # 使用SSL连接
     context = ssl.create_default_context()
@@ -120,15 +118,7 @@ def getMailForID(userName, password, specific_msg_id):
 
 
 def getMailsForRange(userName, password, id_start, id_end):
-    if 'gmail.com' in userName:
-        host = 'imap.gmail.com'
-        port = 993
-    elif 'outlook.com' in userName:
-        host = 'outlook.office365.com'
-        port = 993
-    else:
-        print("Unsupported email service.")
-        return False
+    host, port = getMailHostPort(userName)
 
     # 使用SSL连接
     context = ssl.create_default_context()
@@ -195,15 +185,7 @@ def getMailsForRange(userName, password, id_start, id_end):
 
 
 def getMailsForIDs(userName, password, ids):
-    if 'gmail.com' in userName:
-        host = 'imap.gmail.com'
-        port = 993
-    elif 'outlook.com' in userName:
-        host = 'outlook.office365.com'
-        port = 993
-    else:
-        print("Unsupported email service.")
-        return False
+    host, port = getMailHostPort(userName)
 
     # 使用SSL连接
     context = ssl.create_default_context()
@@ -270,15 +252,7 @@ def getMailsForIDs(userName, password, ids):
 
 
 def getNewID(userName, password):
-    if 'gmail.com' in userName:
-        host = 'imap.gmail.com'
-        port = 993
-    elif 'outlook.com' in userName:
-        host = 'outlook.office365.com'
-        port = 993
-    else:
-        print("Unsupported email service.")
-        return False
+    host, port = getMailHostPort(userName)
 
     # 使用SSL连接
     context = ssl.create_default_context()
@@ -302,15 +276,7 @@ def getNewID(userName, password):
 
 
 def getNew10ID(userName, password):
-    if 'gmail.com' in userName:
-        host = 'imap.gmail.com'
-        port = 993
-    elif 'outlook.com' in userName:
-        host = 'outlook.office365.com'
-        port = 993
-    else:
-        print("Unsupported email service.")
-        return False
+    host, port = getMailHostPort(userName)
 
     # 使用SSL连接
     context = ssl.create_default_context()
