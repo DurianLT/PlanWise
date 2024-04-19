@@ -1,26 +1,9 @@
 import json
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
-from django.shortcuts import render, redirect
-
 from django.http import JsonResponse
 from django.views.generic import DetailView
-
-from mailhandler.emailProcessing.base import getMailsForIDs, getMailForID
-
-from mailhandler.emailProcessing.tool import analyze_email_content, select_best_result
-
+from mailhandler.emailProcessing.base import getMailsForIDs, getMailForID, analyze_email_content, select_best_result, getNew10ID, loginTest
 from user.forms import UserForm
-
-from mailhandler.emailProcessing.base import getNew10ID
-
-from mailhandler.emailProcessing.base import loginTest
-
 from mailhandler.models import Email
-
-from user.models import CustomUser
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.shortcuts import render
@@ -194,76 +177,3 @@ class EmailDetailView(DetailView):
             event_details = email.event_details
         context['email_data'].event_details = event_details
         return context
-
-
-class DisplayEmailsView(LoginRequiredMixin, View):
-    template_name = 'display_emails.html'
-    login_url = 'login'
-
-    def get(self, request):
-        # 只负责渲染基础页面
-        return render(request, self.template_name)
-
-
-class GetEmailsView(View):
-    def get(self, request, user_id):
-        user = CustomUser.objects.get(pk=user_id)
-        userName = user.outlook_email
-        password = user.secondary_password
-        ids = [4172, 4173, 4174, 4175, 4178, 4177]  # 示例 ID
-        emails = getMailsForIDs(userName, password, ids)  # 获取邮件数据
-        return JsonResponse({'emails': emails})  # 返回JSON响应
-
-
-class DisplayEmailView(LoginRequiredMixin, View):
-    template_name = 'display_email.html'
-    login_url = 'login'
-
-    def get(self, request):
-        email_info_list = []
-        users = CustomUser.objects.all()
-
-        for user in users:
-            userName = user.outlook_email
-            password = user.secondary_password
-            specific_msg_id = 4225  # 根据需要调整
-
-            if userName and password:
-                email_data = getMailForID(userName, password, specific_msg_id)
-                if isinstance(email_data, str):
-                    continue  # 跳过错误消息
-
-                from_decoded = email_data[0][0]
-                subject = email_data[0][1]
-                date = email_data[0][2]
-                body = email_data[0][3]
-
-                results = [analyze_email_content(body) for _ in range(3)]
-                best_result = select_best_result(results)
-
-                event_details = self.parse_best_result(best_result)
-
-                email_info_list.append({
-                    'from': from_decoded,
-                    'subject': subject,
-                    'date': date,
-                    'body': body,
-                    'event_details': event_details
-                })
-
-        return render(request, self.template_name, {'emails': email_info_list})
-
-    def parse_best_result(self, best_result):
-        if best_result.get('isEvents') == 'True':
-            details = '帮你解析到了事件：'
-            if best_result.get('date'):
-                details += f"日期：{best_result['date']} "
-            if best_result.get('time'):
-                details += f"时间：{best_result['time']} "
-            if best_result.get('place'):
-                details += f"地点：{best_result['place']} "
-            if best_result.get('events'):
-                details += f"事件：{best_result['events']} "
-            return details
-        else:
-            return '没有解析出事件'
