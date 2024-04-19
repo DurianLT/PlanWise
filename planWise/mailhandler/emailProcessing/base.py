@@ -1,4 +1,6 @@
 import json
+import re
+
 from bs4 import BeautifulSoup
 import requests
 from imapclient import IMAPClient
@@ -16,7 +18,11 @@ def clean_text(html_content):
     # 获取所有文本内容，去除标签
     text = soup.get_text(separator=' ')
 
-    return text
+    # 去除CSS样式和多余的空格
+    text = re.sub(r'\s+', ' ', text)  # 将一个或多个空格替换为一个空格
+    text = re.sub(r'\n\n+', '\n', text)  # 将两个或更多的换行符替换为一个换行符
+
+    return text.strip()  # 返回处理后的文本，移除首尾的空格和换行
 
 
 def getMailHostPort(userName):
