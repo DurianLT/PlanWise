@@ -1,6 +1,11 @@
-<!-- templates/event_list.html -->
-{% for event in object_list %}
-    {{ event.date }}
-    {{ event.address }}
-    {{ event.event }}
-{% endfor %}    
+{% block title %}
+    事件列表
+{% endblock %}
+{% block content %}
+    {% for event in object_list %}
+        {{ event.date }}
+        {{ event.address }}
+        {{ event.event }}
+    {% endfor %}           
+{% endblock %}
+ 
