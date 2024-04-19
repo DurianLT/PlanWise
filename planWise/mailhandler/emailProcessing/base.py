@@ -1,7 +1,5 @@
-import html
 import json
-import re
-
+from bs4 import BeautifulSoup
 import requests
 from imapclient import IMAPClient
 from email.header import decode_header
@@ -11,14 +9,14 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 
-def clean_text(text):
-    """清理邮件正文中的多余空格并保留换行"""
-    # 只移除行内的多余空格，不影响换行符
-    lines = text.splitlines()
-    cleaned_lines = [re.sub(r'\s+', ' ', line).strip() for line in lines]
-    # 使用html.unescape处理HTML实体
-    cleaned_text = html.unescape('\n'.join(cleaned_lines))
-    return cleaned_text
+def clean_text(html_content):
+    # 使用BeautifulSoup解析HTML内容
+    soup = BeautifulSoup(html_content, 'lxml')
+
+    # 获取所有文本内容，去除标签
+    text = soup.get_text(separator=' ')
+
+    return text
 
 
 def getMailHostPort(userName):
@@ -63,12 +61,10 @@ def parse_email(data):
             cdispo = str(part.get('Content-Disposition'))
             if ctype == 'text/plain' and 'attachment' not in cdispo:
                 text = part.get_payload(decode=True).decode(part.get_content_charset(), 'replace')
-                print('clean_text')
                 body = clean_text(text)
                 break
     else:
         text = email_message.get_payload(decode=True).decode(email_message.get_content_charset(), 'replace')
-        print('clean_text')
         body = clean_text(text)
 
     # 处理时间
