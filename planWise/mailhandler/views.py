@@ -76,7 +76,6 @@ class CheckUserView(LoginRequiredMixin, View):
                 event_details = email.event_details
 
             prepared_emails.append({
-                'pk': email.pk,
                 'from_email': email.from_email,
                 'subject': email.subject,
                 'date': email.date,
