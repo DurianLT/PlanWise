@@ -5,6 +5,7 @@ from email.header import decode_header
 from email import message_from_bytes
 import ssl
 
+
 def clean_text(text):
     """清理邮件正文中的多余空格并保留换行"""
     # 只移除行内的多余空格，不影响换行符
@@ -14,14 +15,23 @@ def clean_text(text):
     cleaned_text = html.unescape('\n'.join(cleaned_lines))
     return cleaned_text
 
+
 def loginTest(userName, password):
-    HOST = 'outlook.office365.com'
+    if 'gmail.com' in userName:
+        host = 'imap.gmail.com'
+        port = 993
+    elif 'outlook.com' in userName:
+        host = 'outlook.office365.com'
+        port = 993
+    else:
+        print("Unsupported email service.")
+        return False
 
     # 使用SSL连接
     context = ssl.create_default_context()
 
     try:
-        with IMAPClient(HOST, ssl_context=context) as client:
+        with IMAPClient(host, port=port, ssl_context=context) as client:
             # 尝试登录
             client.login(userName, password)
             return True
@@ -30,11 +40,20 @@ def loginTest(userName, password):
 
 
 def getMailForID(userName, password, specific_msg_id):
-    HOST = 'outlook.office365.com'
+    if 'gmail.com' in userName:
+        host = 'imap.gmail.com'
+        port = 993
+    elif 'outlook.com' in userName:
+        host = 'outlook.office365.com'
+        port = 993
+    else:
+        print("Unsupported email service.")
+        return False
+
     # 使用SSL连接
     context = ssl.create_default_context()
 
-    with IMAPClient(HOST, ssl_context=context) as client:
+    with IMAPClient(host, port=port, ssl_context=context) as client:
         # 登录
         client.login(userName, password)
 
@@ -101,10 +120,20 @@ def getMailForID(userName, password, specific_msg_id):
 
 
 def getMailsForRange(userName, password, id_start, id_end):
-    HOST = 'outlook.office365.com'
+    if 'gmail.com' in userName:
+        host = 'imap.gmail.com'
+        port = 993
+    elif 'outlook.com' in userName:
+        host = 'outlook.office365.com'
+        port = 993
+    else:
+        print("Unsupported email service.")
+        return False
+
+    # 使用SSL连接
     context = ssl.create_default_context()
 
-    with IMAPClient(HOST, ssl_context=context) as client:
+    with IMAPClient(host, port=port, ssl_context=context) as client:
         # 登录
         client.login(userName, password)
 
@@ -166,10 +195,20 @@ def getMailsForRange(userName, password, id_start, id_end):
 
 
 def getMailsForIDs(userName, password, ids):
-    HOST = 'outlook.office365.com'
+    if 'gmail.com' in userName:
+        host = 'imap.gmail.com'
+        port = 993
+    elif 'outlook.com' in userName:
+        host = 'outlook.office365.com'
+        port = 993
+    else:
+        print("Unsupported email service.")
+        return False
+
+    # 使用SSL连接
     context = ssl.create_default_context()
 
-    with IMAPClient(HOST, ssl_context=context) as client:
+    with IMAPClient(host, port=port, ssl_context=context) as client:
         # 登录
         client.login(userName, password)
 
@@ -231,12 +270,20 @@ def getMailsForIDs(userName, password, ids):
 
 
 def getNewID(userName, password):
-    HOST = 'outlook.office365.com'
+    if 'gmail.com' in userName:
+        host = 'imap.gmail.com'
+        port = 993
+    elif 'outlook.com' in userName:
+        host = 'outlook.office365.com'
+        port = 993
+    else:
+        print("Unsupported email service.")
+        return False
 
     # 使用SSL连接
     context = ssl.create_default_context()
 
-    with IMAPClient(HOST, ssl_context=context) as client:
+    with IMAPClient(host, port=port, ssl_context=context) as client:
         # 登录
         client.login(userName, password)
 
@@ -255,12 +302,20 @@ def getNewID(userName, password):
 
 
 def getNew10ID(userName, password):
-    HOST = 'outlook.office365.com'
+    if 'gmail.com' in userName:
+        host = 'imap.gmail.com'
+        port = 993
+    elif 'outlook.com' in userName:
+        host = 'outlook.office365.com'
+        port = 993
+    else:
+        print("Unsupported email service.")
+        return False
 
     # 使用SSL连接
     context = ssl.create_default_context()
 
-    with IMAPClient(HOST, ssl_context=context) as client:
+    with IMAPClient(host, port=port, ssl_context=context) as client:
         # 登录
         client.login(userName, password)
 
@@ -280,4 +335,3 @@ def getNew10ID(userName, password):
         client.logout()
 
     return latest_emails_ids
-
