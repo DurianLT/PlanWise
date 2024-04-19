@@ -5,6 +5,7 @@ from django.views import View
 from django.shortcuts import render, redirect
 
 from django.http import JsonResponse
+from django.views.generic import DetailView
 
 from mailhandler.emailProcessing.base import getMailsForIDs, getMailForID
 
@@ -172,6 +173,26 @@ class UpdateUserView(LoginRequiredMixin, View):
     def parse_best_result(self, result):
         # 逻辑来格式化结果字符串
         return f"{result}"
+
+
+class EmailDetailView(DetailView):
+    model = Email
+    context_object_name = 'email_data'
+    template_name = 'email_detail.html'
+
+    def get_queryset(self):
+        # 这里过滤只允许用户查看自己的邮件
+        return super().get_queryset().filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        email = context['email_data']
+        if email.event_details != 'None':
+            event_details = safe_loads(email.event_details)
+        else:
+            event_details = email.event_details
+        context['email_data'].event_details = event_details
+        return context
 
 
 class DisplayEmailsView(LoginRequiredMixin, View):

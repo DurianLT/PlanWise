@@ -1,17 +1,18 @@
-{% block content %}
-    <div>
-        <h1>{{ object.subject }}</h1>
-        <p><b>From: </b>{{ object.sender }}</p>
-        <p><b>Received at: </b>{{ object.received_at }}</p>
-        <p><b>Body: </b></p>
-        <div>{{ object.body|linebreaks }}</div>
-    </div>
-    <div>
-        <h2>Analysis Data</h2>
-        <p><b>Date: </b>{{ analysis_data.date }}</p>
-        <p><b>Event: </b>{{ analysis_data.events }}</p>
-        <p><b>Place: </b>{{ analysis_data.place|default:"N/A" }}</p>
-        <p><b>Time: </b>{{ analysis_data.time|default:"N/A" }}</p>
-    </div>
-    
-{% endblock %}
+<li>
+    <h4>From: {{ email_data.from_email }}</h4>
+    <p>Subject: {{ email_data.subject }}</p>
+    <p>Date: {{ email_data.date|date:"Y-m-d H:i:s" }}</p>
+    <div>Body: <pre>{{ email_data.body|safe }}</pre></div>
+
+    {% if email_data.event_details and email_data.event_details.isEvents == 'True' %}
+        <div>解析出了事件
+            <p>日期：{{ email_data.event_details.date }}</p>
+            <p>事件：{{ email_data.event_details.events }}</p>
+            {% if email_data.event_details.time %}
+            <p>时间：{{ email_data.event_details.time }}</p>
+            {% endif %}
+            <p>地点：{{ email_data.event_details.place }}</p>
+        </div>
+    {% else %}
+    {% endif %}
+</li>
