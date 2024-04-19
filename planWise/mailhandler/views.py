@@ -1,11 +1,8 @@
 import json
 from django.http import JsonResponse
 from django.views.generic import DetailView
-from mailhandler.emailProcessing.base import getMailsForIDs, getMailForID
-from mailhandler.emailProcessing.tool import analyze_email_content, select_best_result
+from mailhandler.emailProcessing.base import getMailsForIDs, getMailForID, analyze_email_content, select_best_result, getNew10ID, loginTest
 from user.forms import UserForm
-from mailhandler.emailProcessing.base import getNew10ID
-from mailhandler.emailProcessing.base import loginTest
 from mailhandler.models import Email
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
