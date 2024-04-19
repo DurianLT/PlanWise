@@ -10,7 +10,7 @@ class Email(models.Model):
     subject = models.CharField(max_length=255)
     date = models.DateTimeField()
     body = models.TextField()
-    event_details = models.TextField(blank=True, null=True)  # 用于存储日程解析结果
+    event_details = models.TextField(blank=True, null=True)
 
     class Meta:
         unique_together = ('user', 'message_id')  # 同一用户不会有重复的邮件ID

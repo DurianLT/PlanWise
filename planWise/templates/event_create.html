@@ -1,0 +1,8 @@
+{% block content %}
+<h2>Create Event</h2>
+<form method="post" action="">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- 将表单字段以段落形式展示 -->
+    <button type="submit">Submit Event</button>
+</form>
+{% endblock %}
