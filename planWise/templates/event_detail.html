@@ -1,5 +1,10 @@
-<!-- templaes/event_detail -->
-<h1>Events</h1>
-<p>{{ event.date }}</p>
-<p>{{ event.address }}</p>
-<p>{{ event.event }}</p>
+{% extends "base.html" %}
+{% block title %}
+    事件详情
+{% endblock %}
+{% block content %}
+    <h1>Events</h1>
+    <p>{{ event.date }}</p>
+    <p>{{ event.address }}</p>
+    <p>{{ event.event }}</p>      
+{% endblock %}

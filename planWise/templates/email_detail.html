@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+{% block title %}
+    邮件详情-{{ email_data.subject }}
+{% endblock %}
 {% block content %}
     <div>
         <h4>From: {{ email_data.from_email }}</h4>
@@ -15,6 +19,20 @@
                 <p>地点：{{ email_data.event_details.place }}</p>
             </div>
         {% else %}
+        {% endif %}
+    </div>
+    <div>
+        <h4>From: {{ email_data.from_email }}</h4>
+        <p>Subject: {{ email_data.subject }}</p >
+        <p>Date: {{ email_data.date|date:"Y-m-d H:i:s" }}</p >
+        <div>Body: <pre>{{ email_data.body|safe }}</pre></div>
+    
+        {% if email_data.event_details %}
+        <form method="post" action="{% url 'submit_event' %}">
+            {% csrf_token %}
+            {{ event_form.as_p }}
+            <button type="submit">Upload Event</button>
+        </form>
         {% endif %}
     </div>
 {% endblock %}
