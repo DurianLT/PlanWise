@@ -9,10 +9,14 @@ class CreateEventView(LoginRequiredMixin, CreateView):
     model = models.Event
     login_url = 'login'
     template_name = 'new_events.html'
-    fields = '__all__'
+    fields = ['date', 'address', 'event', 'comment',]
 
     def get_absolute_url(self):
         return reverse ('event_detail', args=[str(self.id)])
+    
+    def form_valid(self, form): 
+        form.instance.author = self.request.user 
+        return super().form_valid(form) 
 
 class EventListView(LoginRequiredMixin, ListView):
     model = models.Event
