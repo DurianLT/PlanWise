@@ -8,13 +8,6 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         fields = ('username',)
 
-
-class CustomUserChangeForm(UserChangeForm):
-    class Meta(UserChangeForm.Meta):
-        model = CustomUser
-        fields = ('username', 'outlook_email', 'secondary_password')
-
-
 class UserForm(forms.ModelForm):
     secondary_password = forms.CharField(widget=forms.PasswordInput(), label='Secondary Password')
 
