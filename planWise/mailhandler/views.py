@@ -187,6 +187,7 @@ class EmailDetailView(DetailView):
                 return None  # 或返回适当的默认值或错误信息
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
         email = context['email_data']
 
@@ -223,7 +224,9 @@ class EmailDetailView(DetailView):
         return context
 
 
+
 class EventCreateView(FormView):
+
     template_name = 'event_create.html'
     form_class = EventForm
     success_url = reverse_lazy('check-users')

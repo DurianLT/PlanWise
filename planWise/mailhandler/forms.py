@@ -3,6 +3,7 @@ from catch_date.models import Event
 
 
 class EventForm(forms.ModelForm):
+
     # 使用 DateTimeField 和适当的小部件，必须填写
     date = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
