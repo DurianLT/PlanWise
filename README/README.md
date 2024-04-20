@@ -33,36 +33,42 @@ Here is the key function of application within project:
 
 ### Installation
 
-```bash
-# navigate to your project
-cd your/path/to/PlanWise
+Clone Project from GitHub repostories use VS Code
+- Clone the URL
+![clone HTTP url](./Images/clone_HTTP.png)
+- Use VS Code and open source control then choose **Clone Repository**
+![clone restories](./Images/clone.png)
+Then input the URL to finish clone.
 
-# Install Python dependencies
-pip install -m requirement.txt
+Or you can use Command to clone project with Git command
+
+```bash
+# git command
+git clone https://github.com/DurianLT/PlanWise.git
 ```
+
+Then double click the file `downloadConf.bat` to configuration 
+![Configuration](./Images/ConfFile.png)
+
+When you see the **Please press any key to continue...**, click Enter of your keyboard to finish configuration.
+
+It will automatically to configurate with `requirements.txt`, which is a Django dependencies file with many necessary packages. 
 
 ### Run applications
+After finish the configuration, double click the `start.bat`
+![start](./Images/ConfFile(start).png)
 
-You can activate the Django server with this command in your command line or bash console
+Then it will show the host URL
+![Start Interface](./Images/StartCom.png)
+- You can directly click it with `Ctrl + Left mouse button` to see tha application interface.
 
-```bash
-# navigate to your project
-cd your/path/to/PlanWise
-
-# Activate the Django server
-python manage.py runserver
-```
-
-After that you can type http://localhost:8000/check-users/ on your web browser to see tha application interface.
+- Or you can type http://localhost:8000/ on your web browser as well.
 
 ## Features of Software
 
 - **Automation**: The tool can automatically capture schedule information and schedule it into the user's schedule. 
 - **Support for multiple email services**: Allows users to link their Outlook or Gmail accounts.
 - **Personalized schedule management**: Users can set or edit personal information, and add and edit schedules automatically or manually.
-
-- Python version >= 3.10
-- Installed Django on your global.
 
 ## Purpose of the software
 
@@ -141,37 +147,87 @@ Evolve according to the evolution of project needs. Initially, it may be as simp
 We will continue to improve the user experience of our software to make it more relevant to the diverse needs of work. We plan to develop a more intuitive interface and add more features for schedule management, such as prioritization, tagging, etc. We also welcome feedback and suggestions from users to work together to take this project to the next high level.
 
 ## Appendix
+
 ### Demo
 
+[Watch Video](https://www.youtube.com)
 
 ### Environments
 
-- Programming Language: Python version >= **3.10**
-- Installed Django on your global.
+- Programming Language: Python version >= **3.10**, Django == **5.0.4**
+- Successful configure file with the content of `requirements.txt`
 - Package Name:
-    - django.shortcuts, django.views.generic, django.urls, django.utils, django.db, django.http.JsonResponse, django.contrib.auth.mixin
-    - pytz, json, re, bs4, requests, impaclient, email, ssl, zoneinfo  
+    `asgrief`, `bs4`, `certifi`, `charset-normalizer`, `distilb`, `Django`,
+    `filelock`, `idna`, `impaclient`, `lxml`, `pipenv`, `platformdirs`, `pytz`, `requests`, `setuptools`, `soupsieve`, `sqlparse`, `tzdata`, `urllib3`
 
 ### Declaration
-
-- `django.shortcuts`: This module provides a variety of shortcuts for writing common view tasks.
-- `django.views.generic`: Contains a series of generic class-based views for common web development tasks, such as displaying lists or detail pages, creating or updating model instances, and more.
-- `django.urls`: URL-related functions and classes are provided  
-    - `reverse`: Used to reverse resolve URLs based on the name configured by the URL
-    - `reverse_lazy`: The URL is not calculated until its value is accessed.
-- `django.utils`: This is a package that contains various utility submodules. In particular, `django.utils.timezone`, which provides the ability to handle time zones and has been used into the software.
-- `django.db`: Contains everything from Django's database layer to convert Python code into database queries.  
-- `django.http.JsonResponse`: Used to return responses in JSON format.
-- `django.contrib.auth.mixin`: Mixin classes are provided for class-based views to add authentication features such as login requirements. 
-- `pytz`: Deals with time zone issues, and it allows for precise and cross-platform time zone calculations.
-- `json`: Used to encode and decode JSON data. 
-- `re`: Used to provide support for regular expressions. It allows for complex string searching, substitution, and parsing operations.
+- `asgiref`: A reference implementation of the ASGI specification. It is used to support asynchronous web applications.
 - `bs4(beautifalsoup4)`: Used to parse HTML and XML documents.
-- `requests`: It is used to send HTTP requests to obtain web content.
+- `certifi`: Mozilla's CA certificate package is provided to validate HTTPS requests.
+- `charset-normalizer`: Used for character set detection, especially when working with text files.
+- `distilb`: A set of low-level components for packaging and distributing Python software is provided.
+- `Django`: A high-level Python web framework that encourages rapid development and clean, functional design.
+- `filelock`: Used to implement file locking in Python to prevent conflicts when writing concurrently.
+- `idna`: Implemented Internationalized Domain Name (IDNA) support for handling international domain names.
 - `impaclient`: Simplified IMAP (Internet Message Access Protocol) provides an easy-to-use interface for interacting with IMAP servers, such as reading emails, searching for messages, processing messages, etc.
-- `email`: Used to process e-mails.
-    - `header.decode_header`: Message header information can be decoded.
-    - `message_from_bytes`: Message objects can be parsed from a sequence of bytes.
-- `ssl`: It is used to handle Secure Sockets Layer (SSL) and Transport Layer Security (TLS) protocols to provide network security and encrypted communication.
-- `zoneinfo`: Introduced in Python 3.9 and later to process time zone information, it leverages the IANA time zone database to provide time zone support. 
- 
+- `lxml`:A powerful and Pythonic XML and HTML processing library, based on libxml2 and libxslt.
+- `pipenv`: Provides a tool for Python development workflows for managing dependencies and virtual environments.
+- `platformdirs`: Used to access platform-specific data and profile directories.
+- `pytz`: Deals with time zone issues, and it allows for precise and cross-platform time zone calculations.
+- `requests`: It is used to send HTTP requests to obtain web content.
+- `setuptools`: Used to package Python projects for easy distribution and installation.
+- `soupsieve`: Used to provide support for CSS selectors for BeautifulSoup.
+- `sqlparse`: A non-validated SQL parser for parsing SQL statements.
+- `tzdata`: Time zone data packets to provide time zone support in conjunction with the pytz library.
+- `urllib3`: A powerful, user-friendly HTTP client library for sending HTTP requests.
+
+### API Usage Statement - Email Content Analysis Service
+
+1. Overview
+
+    - This document provides the terms and conditions of use for the Email Content Analysis API (“the API”) designed to offer developers automated analysis of email content, utilizing the ChatGPT 3.5 interface for intelligent parsing.
+
+2. Access and Authentication
+
+	- **API Endpoint**: http://154.44.10.169:1145/analyze_email
+	- **Authentication**: Currently, the API can be accessed without authentication. Future implementations may introduce API key authentication, and users will be notified in advance.
+
+3. Terms of Use
+
+	- **Commercial Use**: This API is available for both non-commercial and commercial applications at no charge.
+	- **Data Policy**: All data submitted through this API will not be stored or used for purposes other than providing the requested service.
+	- **Attribution Requirement**: Applications using this API are not required to provide attribution.
+
+4. Request and Response Format
+
+	- **Method**: POST
+	- **Request Parameters**:
+	- **email_content (string)**: The email text content to be analyzed.
+	- **Successful Response**: HTTP Status Code: 200
+	- **Return Format**: JSON, containing analysis results.
+	- **Failed Response**: Non-200 HTTP status codes indicate a failed request, possible reasons include server errors or issues with request parameters.
+
+5. Rate Limits
+    - There are currently no limits on the number of API calls. This may change based on service load and will be adjusted with future policy updates.
+
+6. Sample Code
+
+    ```python
+    def analyze_email_content(email_content):
+        url = "http://154.44.10.169:1145/analyze_email"
+        data = {"email_content": email_content}
+        response = requests.post(url, json=data)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print("Failed to get a successful response from the API. Status Code:", response.status_code)
+            return None
+    ```
+
+7. Support and Contact Information
+
+    - For problems encountered while using the API, or for technical support, please contact us through:
+
+	    - **Email**: sccyduanlu@outlook.com
+
+    - All interpretations of this statement are reserved by **Chieri Ko**. We retain the right to update and modify this statement at any time.
