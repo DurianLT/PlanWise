@@ -265,6 +265,7 @@ h1 {
 .footer {
     padding: 10px;
     text-align: right;
+    z-index:-1;
 }
 
 .button {
