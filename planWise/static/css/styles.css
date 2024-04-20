@@ -4,9 +4,16 @@ html, body {
     padding: 0;
 }
 
+body {
+    background-image: url('/static/images/background.jpg'); /* 背景图片的路径 */
+    background-size: cover; /* 让背景图片铺满整个页面 */
+    background-repeat: no-repeat; /* 防止背景图片重复 */
+    background-attachment: fixed; /* 固定背景图片，使其不随页面滚动 */
+}
+
 /* Navbar styling */
 .navbar {
-    background-color: #333;
+    background-color: #297785;
     color: white;
     display: flex;
     justify-content: space-between;
