@@ -84,13 +84,13 @@ class EmailDetailView(DetailView):
 
         # 根据事件详情初始化表单
         if event_details:
-            if 'time' in event_details and event_details['time'] != 'null':
-                if 'date' in event_details and event_details['date'] != 'null':
+            if 'time' in event_details and event_details['time'] is not None and event_details['time'] != 'null':
+                if 'date' in event_details and event_details['date'] is not None and event_details['date'] != 'null':
                     datetime_str = f"{event_details['date']} {event_details['time']}"
                 else:
                     datetime_str = f"{datetime.datetime.now().date()} {event_details['time']}"
-                # 如果只提供了日期而没有提供时间，则默认将时间设置为"00:00:00"
-            elif 'date' in event_details and event_details['date'] != 'null':
+                    # 如果只提供了日期而没有提供时间，则默认将时间设置为"00:00:00"
+            elif 'date' in event_details and event_details['date'] is not None and event_details['date'] != 'null':
                 datetime_str = f"{event_details['date']} 00:00:00"
                 # 如果既没有提供日期也没有提供时间，则使用当前日期和时间
             else:
