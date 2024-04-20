@@ -32,8 +32,8 @@
                 <td>{{ event.comment }}</td>
                 <td>{{ event.countdown }}</td>
                 <td>
-                    <a href="{% url 'edit_event' pk=event.pk %}" class="btn btn-edit">编辑</a>
-                    <a href="{% url 'delete_event' pk=event.pk %}" class="btn btn-delete">删除</a>
+                    <a href="{% url 'edit_event' pk=event.pk %}" class="btn btn-edit">Change</a>
+                    <a href="{% url 'delete_event' pk=event.pk %}" class="btn btn-delete">Delete</a>
                 </td>
             </tr>
             {% empty %}
