@@ -17,11 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('event/', include('catch_date.urls')),
     path('',include('mailhandler.urls')),
+    path('', RedirectView.as_view(url='user/login', permanent=False)),
     path('user/', include('user.urls')), 
     path('user/', include('django.contrib.auth.urls')),
 ]
