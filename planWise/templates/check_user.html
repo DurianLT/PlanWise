@@ -19,13 +19,13 @@
                         data.emails.forEach(function(email) {
                             var eventDetailsHtml = ''; // 初始化事件详情字符串
                             if (email.event_details && email.event_details.isEvents === 'True') {
-                                eventDetailsHtml = `<div>解析出了事件
-                                                        <p>日期：${email.event_details.date}</p>
-                                                        <p>事件：${email.event_details.events}</p>`;
+                                eventDetailsHtml = `<div>Event result
+                                                        <p>Date：${email.event_details.date}</p>
+                                                        <p>Event：${email.event_details.events}</p>`;
                                 if (email.event_details.time) {
-                                    eventDetailsHtml += `<p>时间：${email.event_details.time}</p>`;
+                                    eventDetailsHtml += `<p>Time：${email.event_details.time}</p>`;
                                 }
-                                eventDetailsHtml += `<p>地点：${email.event_details.place}</p>
+                                eventDetailsHtml += `<p>Place：${email.event_details.place}</p>
                                                     </div>`;
                             } else {
                                 eventDetailsHtml = 'No events found.';
@@ -38,17 +38,17 @@
                                     <p>Date: ${new Date(email.date).toISOString().slice(0, 19).replace('T', ' ')}</p>
                                     <div>Body: <pre>${email.body}</pre></div>
                                     <div>${eventDetailsHtml}</div>
-                                    <a href="/email/${email.pk}/" class="button">查看详情</a>
+                                    <a href="/email/${email.pk}/" class="button">Check the details</a>
                                 </li>`
                             );
                         });
-                        $('#updateStatus').text('邮件已更新。');
+                        $('#updateStatus').text('The email has been updated.');
                     } else {
-                        $('#updateStatus').text('当前邮件已是最新。');
+                        $('#updateStatus').text('Emails are up to date.');
                     }
                 },
                 error: function() {
-                    $('#updateStatus').text('邮件更新失败，请检查网络或联系管理员。');
+                    $('#updateStatus').text('Email update failed, please check the network or contact the administrator.');
                 }
             });
         }
@@ -92,7 +92,7 @@
                 </div>
                 {% if email_data.event_details and email_data.event_details.isEvents == 'True' %}
                     <div class="eventDetails">
-                        <p>解析出了事件: {{ email_data.event_details.events }}</p>
+                        <p>Event result: {{ email_data.event_details.events }}</p>
                     </div>
                     <!-- 其他事件信息 -->
                 {% endif %}
@@ -104,7 +104,7 @@
         {% endfor %}
         </div>
 </div>
-<button onclick="topFunction()" id="scrollTopBtn" title="回到顶部">Top</button>
+<button onclick="topFunction()" id="scrollTopBtn" title="back to the top">Top</button>
 <script>
     // 当页面滚动到一定位置时显示或隐藏回到顶部按钮
     window.onscroll = function() {scrollFunction()};
