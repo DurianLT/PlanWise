@@ -16,8 +16,8 @@ Once the date is captured, it is automatically added to the user's schedule. Use
 
 Below is the whole structure of the PlanWise project
 
-![alt text](README\Images/grahicalAbstract(1).png)
-![alt text](README\Images/graphicalAbstract(2).png)
+![alt text](readme_image/grahicalAbstract(1).png)
+![alt text](readme_image/graphicalAbstract(2).png)
 
 Here is the key function of application within project:
 
@@ -35,9 +35,9 @@ Here is the key function of application within project:
 
 Clone Project from GitHub repostories use VS Code
 - Clone the URL
-![clone HTTP url](README\Images/clone_HTTP.png)
+![clone HTTP url](readme_image/clone_HTTP.png)
 - Use VS Code and open source control then choose **Clone Repository**
-![clone restories](README\Images/clone.png)
+![clone restories](readme_image/clone.png)
 Then input the URL to finish clone.
 
 Or you can use Command to clone project with Git command
@@ -48,7 +48,7 @@ git clone https://github.com/DurianLT/PlanWise.git
 ```
 
 Then double click the file `downloadConf.bat` to configuration 
-![Configuration](README\Images/ConfFile.png)
+![Configuration](readme_image/ConfFile.png)
 
 When you see the **Please press any key to continue...**, click Enter of your keyboard to finish configuration.
 
@@ -56,10 +56,10 @@ It will automatically to configurate with `requirements.txt`, which is a Django 
 
 ### Run applications
 After finish the configuration, double click the `start.bat`
-![start](README\Images/ConfFile(start).png)
+![start](readme_image/ConfFile(start).png)
 
 Then it will show the host URL
-![Start Interface](README\Images/StartCom.png)
+![Start Interface](readme_image/StartCom.png)
 - You can directly click it with `Ctrl + Left mouse button` to see tha application interface.
 
 - Or you can type http://localhost:8000/ on your web browser as well.
