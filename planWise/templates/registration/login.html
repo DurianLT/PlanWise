@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block title %}
-    登录
+    Log in
 {% endblock %}
 {% block content %}
 
 <div class="form-container">
-    <h2>登录</h2>
+    <h2>Log in</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">登录</button>
+        <button type="submit">Log in</button>
     </form>
 </div>
 {% endblock %}

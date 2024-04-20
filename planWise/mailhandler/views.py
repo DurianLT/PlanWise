@@ -24,7 +24,7 @@ class CheckUserView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         if not (user.outlook_email and user.secondary_password):
-            return render(request, self.template_name, {'user': {'message': '你未绑定邮箱', 'updating': False}})
+            return render(request, self.template_name, {'user': {'message': 'You have not bound your email address', 'updating': False}})
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             updated, emails = update_emails(user)
@@ -36,7 +36,7 @@ class CheckUserView(LoginRequiredMixin, View):
         user_info = {
             'outlook_email': user.outlook_email,
             'secondary_password': '**********',
-            'message': '你已绑定邮箱',
+            'message': 'You have bound your email address',
             'updating': True,
             'emails': get_emails_from_db(user)
         }

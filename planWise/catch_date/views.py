@@ -76,15 +76,15 @@ class CountdownView(ListView):
             if event.date:
                 delta = event.date - timezone.now()
                 if delta.total_seconds() < 0:
-                    event.countdown = "已过期"
+                    event.countdown = "Expired"
                 elif delta.days > 0:
-                    event.countdown = f"{delta.days} 天"
+                    event.countdown = f"{delta.days} days"
                 elif delta.seconds >= 3600:  # 大于或等于1小时
                     hours = delta.seconds // 3600
-                    event.countdown = f"{hours} 小时"
+                    event.countdown = f"{hours} hours"
                 else:
                     minutes = delta.seconds // 60
-                    event.countdown = f"{minutes} 分钟"
+                    event.countdown = f"{minutes} minutes"
             else:
                 event.countdown = 'N/A'
 

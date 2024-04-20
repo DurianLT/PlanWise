@@ -4,17 +4,17 @@
 
 <div class="table-container">
 
-    <h2>我的日程</h2>
-    <a href="?sort=date">按日期排序</a> | <a href="?sort=countdown">按倒计时排序</a>
+    <h2>My schedule</h2>
+    <a href="?sort=date">Sorted by date</a> | <a href="?sort=countdown">Sort by countdown</a>
     <table>
         <thead>
             <tr>
-                <th>日期</th>
-                <th>事件</th>
-                <th>地点</th>
-                <th>备注</th>
-                <th>倒计时</th>
-                <th>操作</th>
+                <th>Date</th>
+                <th>Event</th>
+                <th>Place</th>
+                <th>Note</th>
+                <th>Countdown</th>
+                <th>Revise</th>
             </tr>
         </thead>
         <tbody>
@@ -24,7 +24,7 @@
                     {% if event.date %}
                         {{ event.date|date:"Y-m-d H:i" }}
                     {% else %}
-                        暂无日期
+                        No date yet
                     {% endif %}
                 </td>
                 <td>{{ event.event }}</td>
@@ -32,13 +32,13 @@
                 <td>{{ event.comment }}</td>
                 <td>{{ event.countdown }}</td>
                 <td>
-                    <a href="{% url 'edit_event' pk=event.pk %}" class="btn btn-edit">编辑</a>
-                    <a href="{% url 'delete_event' pk=event.pk %}" class="btn btn-delete">删除</a>
+                    <a href="{% url 'edit_event' pk=event.pk %}" class="btn btn-edit">Change</a>
+                    <a href="{% url 'delete_event' pk=event.pk %}" class="btn btn-delete">Delete</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6">没有即将到来的日程。</td>
+                <td colspan="6">No upcoming schedule.</td>
             </tr>
             {% endfor %}
         </tbody>
