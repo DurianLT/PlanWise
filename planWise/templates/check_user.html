@@ -67,14 +67,14 @@
         {% else %}
             <p>please bind you outlook_email.</p>
             <a href="{% url 'update-email' %}">Bind Your Email Here</a>
-        {% endif %}
+        {% endif %}    
+        <div id="updateStatus"></div>
+        <h3>自动为你列出的邮件</h3>
     </div>
 
 
-    <div id="updateStatus"></div>
 
-    <h3>自动为你列出的邮件</h3>
-    <ul id="emailList">
+    <div id="emailList">
         {% for email_data in user.emails %}
             <!-- 单独邮件样式 -->
             <div class="emailItem">
@@ -102,7 +102,7 @@
                 </div>
             </div>
         {% endfor %}
-    </ul>
+        </div>
 </div>
 <button onclick="topFunction()" id="scrollTopBtn" title="回到顶部">Top</button>
 <script>
