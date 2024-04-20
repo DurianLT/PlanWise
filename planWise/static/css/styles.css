@@ -197,7 +197,9 @@ h1 {
     border-radius: 10px;
     margin-top: 20px;
 }
-
+#emailList{
+    margin-top: 20px;
+}
 /* 单独邮件样式 */
 .emailItem {
     background-color: #fafafa; /* 浅灰色背景 */
