@@ -3,8 +3,9 @@
     登录
 {% endblock %}
 {% block content %}
-<h2>登录</h2>
+
 <div class="form-container">
+    <h2>登录</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
