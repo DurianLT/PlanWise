@@ -52,6 +52,9 @@ class EventDetailView(LoginRequiredMixin, DetailView):
 class CountdownView(LoginRequiredMixin, ListView):
     model = models.Event
     template_name = 'event_list.html'
+    context_object_name = 'events'
+
+
     def get_queryset(self):
         # 获取排序参数
         sort = self.request.GET.get('sort', 'date')  # 默认按日期排序
