@@ -130,3 +130,5 @@ AUTH_USER_MODEL = 'user.CustomUser'
 
 LOGIN_REDIRECT_URL = 'update-email'
 LOGOUT_REDIRECT_URL = 'login'
+
+LOGIN_URL = 'login'

@@ -65,7 +65,7 @@ class UpdateUserView(LoginRequiredMixin, View):
         return JsonResponse({'status': 'error', 'message': 'Form is invalid'})
 
 
-class EmailDetailView(DetailView):
+class EmailDetailView(LoginRequiredMixin, DetailView):
     model = Email
     context_object_name = 'email_data'
     template_name = 'email_detail.html'
@@ -118,7 +118,7 @@ class EmailDetailView(DetailView):
         return context
 
 
-class EmailEventCreateView(FormView):
+class EmailEventCreateView(LoginRequiredMixin, FormView):
     template_name = 'email_event_create.html'
     form_class = EventForm
     success_url = reverse_lazy('check-users')

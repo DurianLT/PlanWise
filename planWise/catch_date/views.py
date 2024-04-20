@@ -9,7 +9,6 @@ from django.views.generic import ListView
 from django.utils.timezone import make_aware
 from django.conf import settings
 import pytz
-from datetime import datetime
 
 
 class CreateEventView(LoginRequiredMixin, CreateView):
@@ -19,13 +18,13 @@ class CreateEventView(LoginRequiredMixin, CreateView):
     fields = ['date', 'address', 'event', 'comment', ]
 
     def get_success_url(self):
-        return reverse_lazy('event_detail', kwargs={'pk': self.object.pk})
+        return reverse_lazy('event_list')
 
     def form_valid(self, form):
         form.instance.user_id = self.request.user.id
         return super().form_valid(form)
     
-class EventUpdateView(UpdateView):
+class EventUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Event
     fields = ['date', 'event', 'address', 'comment']
     template_name = 'edit_event.html'
@@ -36,7 +35,7 @@ class EventUpdateView(UpdateView):
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
 
-class EventDeleteView(DeleteView):
+class EventDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Event
     template_name = 'delete_event.html'
     success_url = reverse_lazy('event_list')
@@ -50,11 +49,9 @@ class EventDetailView(LoginRequiredMixin, DetailView):
     template_name = 'event_detail.html'
     fields = '__all__'
 
-class CountdownView(ListView):
+class CountdownView(LoginRequiredMixin, ListView):
     model = models.Event
     template_name = 'event_list.html'
-    context_object_name = 'events'
-
     def get_queryset(self):
         # 获取排序参数
         sort = self.request.GET.get('sort', 'date')  # 默认按日期排序

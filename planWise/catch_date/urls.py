@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import CountdownView
 
 urlpatterns = [
     path('new_events/', views.CreateEventView.as_view(), name='new_events'),
