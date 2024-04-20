@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}
-    注册
+    Sign up
 {% endblock %}
 {% block content %}
 
 <div class="form-container">
-    <h2>注册</h2>
+    <h2>Sign up</h2>
     <form method="post">
         {% csrf_token %}
         {% if form.non_field_errors %}
@@ -29,7 +29,7 @@
                 {% endif %}
             </div>
         {% endfor %}
-        <button type="submit">注册</button>
+        <button type="submit">Sign up</button>
     </form>
 </div>
 {% endblock %}

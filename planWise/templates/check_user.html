@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-    邮件处理系统
+    Email processing system
 {% endblock %}
 {% block content %}
 {% if user.outlook_email %}
@@ -59,7 +59,7 @@
     </script>
 <div class="container_check_user">
     <div id="emailListContainer">
-        <h1>邮件处理系统</h1>
+        <h1>Email processing system</h1>
         <h3>{{ user.message }}</h3>
         {% if user.outlook_email %}
             <p>Outlook Email: {{ user.outlook_email }}</p>
