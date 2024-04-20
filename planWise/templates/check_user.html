@@ -3,71 +3,6 @@
     邮件处理系统
 {% endblock %}
 {% block content %}
-<div class="container_check_user">
-    <div id="emailListContainer">
-        <h1>邮件处理系统</h1>
-        <h3>{{ user.message }}</h3>
-        {% if user.outlook_email %}
-            <p>Outlook Email: {{ user.outlook_email }}</p>
-            <p>Secondary Password: {{ '**********' }}</p>
-        {% else %}
-            <p>please bind you outlook_email.</p>
-            <a href="{% url 'update-email' %}">Bind Your Email Here</a>
-        {% endif %}
-    </div>
-
-
-    <div id="updateStatus"></div>
-
-    <h3>自动为你列出的邮件</h3>
-    <ul id="emailList">
-        {% for email_data in user.emails %}
-            <!-- 单独邮件样式 -->
-            <div class="emailItem">
-                <div class="emailHeader">
-                    <div class="sender">{{ email_data.from_email }}</div>
-                    <div class="subject">{{ email_data.subject }}</div>
-                    <div class="date">{{ email_data.date|date:"Y-m-d H:i:s" }}</div>
-                </div>
-                <div class="emailBody">
-                    <div class="bodyContent">
-                        {{ email_data.body }}
-                        <!-- 额外的div用于隐藏部分文本 -->
-                        <div class="bodyContentOverlay"></div>
-                    </div>
-
-                    <!-- 如果解析出事件，强调显示 -->
-                    {% if email_data.event_details and email_data.event_details.isEvents == 'True' %}
-                        <div class="eventDetails">解析出了事件</div>
-                        <!-- 其他事件信息 -->
-                    {% endif %}
-                </div>
-                <div class="footer">
-                    <a href="{% url 'email_detail' pk=email_data.pk %}" class="button">查看详情</a>
-                </div>
-            </div>
-        {% endfor %}
-    </ul>
-</div>
-<button onclick="topFunction()" id="scrollTopBtn" title="回到顶部">Top</button>
-<script>
-    // 当页面滚动到一定位置时显示或隐藏回到顶部按钮
-    window.onscroll = function() {scrollFunction()};
-
-    function scrollFunction() {
-        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-            document.getElementById("scrollTopBtn").style.display = "block";
-        } else {
-            document.getElementById("scrollTopBtn").style.display = "none";
-        }
-    }
-
-    // 回到顶部的函数
-    function topFunction() {
-        document.body.scrollTop = 0; // For Safari
-        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-    }
-</script>
 {% if user.outlook_email %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -122,5 +57,71 @@
         setInterval(fetchAndUpdateEmails, 30000);  // 每30秒检查一次
     });
     </script>
+<div class="container_check_user">
+    <div id="emailListContainer">
+        <h1>邮件处理系统</h1>
+        <h3>{{ user.message }}</h3>
+        {% if user.outlook_email %}
+            <p>Outlook Email: {{ user.outlook_email }}</p>
+            <p>Secondary Password: {{ '**********' }}</p>
+        {% else %}
+            <p>please bind you outlook_email.</p>
+            <a href="{% url 'update-email' %}">Bind Your Email Here</a>
+        {% endif %}
+    </div>
+
+
+    <div id="updateStatus"></div>
+
+    <h3>自动为你列出的邮件</h3>
+    <ul id="emailList">
+        {% for email_data in user.emails %}
+            <!-- 单独邮件样式 -->
+            <div class="emailItem">
+                <div class="emailHeader">
+                    <div class="sender">{{ email_data.from_email }}</div>
+                    <div class="subject">{{ email_data.subject }}</div>
+                    <div class="date">{{ email_data.date|date:"Y-m-d H:i:s" }}</div>
+                </div>
+                <div class="emailBody">
+                    <div class="bodyContent">
+                        {{ email_data.body }}
+                        <!-- 额外的div用于隐藏部分文本 -->
+                        <div class="bodyContentOverlay"></div>
+                    </div>
+                </div>
+                {% if email_data.event_details and email_data.event_details.isEvents == 'True' %}
+                    <div class="eventDetails">
+                        <p>解析出了事件: {{ email_data.event_details.events }}</p>
+                    </div>
+                    <!-- 其他事件信息 -->
+                {% endif %}
+                <div class="footer">
+                    
+                    <a href="{% url 'email_detail' pk=email_data.pk %}" class="button">查看详情</a>
+                </div>
+            </div>
+        {% endfor %}
+    </ul>
+</div>
+<button onclick="topFunction()" id="scrollTopBtn" title="回到顶部">Top</button>
+<script>
+    // 当页面滚动到一定位置时显示或隐藏回到顶部按钮
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            document.getElementById("scrollTopBtn").style.display = "block";
+        } else {
+            document.getElementById("scrollTopBtn").style.display = "none";
+        }
+    }
+
+    // 回到顶部的函数
+    function topFunction() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    }
+</script>
 {% endif %}
 {% endblock %}
