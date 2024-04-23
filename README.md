@@ -103,7 +103,7 @@ The software is primarily intended for groups that need to effectively manage, c
  
 ### Members
 
-- **Lawrrence**: Mainly responsible for the construction of the framework, the construction of the basic project structure, the construction and beautification of front-end web pages, and the repair and testing of some bugs.
+- **Lawrence**: Mainly responsible for the construction of the framework, the construction of the basic project structure, the construction and beautification of front-end web pages, and the repair and testing of some bugs.
 
 - **Chieri**: Responsible for implementing the logic to access user emails through two-factor authentication, managing the retrieval and database integration processes, and displaying the information on the frontend. This includes using JavaScript to enable real-time updates of emails on the frontend and their simultaneous storage in the backend database. Additionally, I am tasked with developing a ChatGPT AI interface for analyzing the content of the emails. The results of this analysis are automatically used to generate forms that users can decide whether to add to their schedules. I am also in charge of creating a schedule interface that sorts entries by ID and deadline.
 
