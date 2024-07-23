@@ -186,6 +186,7 @@ We will continue to improve the user experience of our software to make it more 
 1. Overview
 
     - This document provides the terms and conditions of use for the Email Content Analysis API (“the API”) designed to offer developers automated analysis of email content, utilizing the ChatGPT 3.5 interface for intelligent parsing.
+    - Notice: This API is no longer in service. The information provided here is for reference only.
 
 2. Access and Authentication
 
